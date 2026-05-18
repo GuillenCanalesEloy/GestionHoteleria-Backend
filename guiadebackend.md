@@ -167,6 +167,7 @@ email debe ser unico.
 password debe guardarse encriptado con BCrypt.
 rol puede iniciar como CLIENTE.
 createdAt y updatedAt pueden manejarse con @PrePersist y @PreUpdate.
+Usar columnas explicitas created_at y updated_at para mantener consistencia en MySQL.
 ```
 
 Tambien crear `entity/Rol.java` como enum:
@@ -181,6 +182,15 @@ Crear tambien `repository/UsuarioRepository.java`:
 ```text
 findByEmail(String email)
 existsByEmail(String email)
+```
+
+Resultado esperado:
+
+```text
+La entidad Usuario queda mapeada a la tabla usuarios.
+El email queda protegido con una restriccion unique.
+El rol por defecto para nuevos registros es CLIENTE.
+El repositorio permite buscar y validar usuarios por email.
 ```
 
 ## KAN-34 Configurar Spring Security

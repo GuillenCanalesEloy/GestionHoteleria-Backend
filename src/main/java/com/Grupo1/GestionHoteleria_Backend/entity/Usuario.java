@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,8 +31,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "usuarios")
+@Table(
+		name = "usuarios",
+		uniqueConstraints = {
+				@UniqueConstraint(name = "uk_usuarios_email", columnNames = "email")
+		}
+)
 public class Usuario implements UserDetails {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,20 +54,23 @@ public class Usuario implements UserDetails {
 	@Column(nullable = false)
 	private String password;
 
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 30)
-	private Rol rol;
+	private Rol rol = Rol.CLIENTE;
 
-	@Column(nullable = false, updatable = false)
+	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
-	@Column(nullable = false)
+	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
 	@PrePersist
 	void prePersist() {
 		LocalDateTime now = LocalDateTime.now();
-		createdAt = now;
+		if (createdAt == null) {
+			createdAt = now;
+		}
 		updatedAt = now;
 	}
 
