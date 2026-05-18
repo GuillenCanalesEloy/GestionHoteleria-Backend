@@ -19,6 +19,69 @@ Endpoints previstos por el frontend:
 /api/clientes
 ```
 
+## Analisis del nuevo orden
+
+Nuevo orden de tareas:
+
+```text
+1. KAN-29 Configurar arquitectura de paquetes
+2. KAN-25 Configurar conexion MySQL
+3. KAN-26 Crear base de datos hotelera
+4. KAN-27 Configurar JPA/Hibernate
+5. KAN-31 Crear entidad Usuario
+6. KAN-34 Configurar Spring Security
+7. KAN-30 Implementar sistema JWT
+8. KAN-32 Crear endpoint Login
+9. KAN-33 Crear endpoint Register
+10. KAN-28 Configurar variables de entorno
+```
+
+Este orden es valido, pero con una observacion importante: `KAN-25` puede hacerse antes de `KAN-26` solo como configuracion de archivos. No se debe intentar levantar la aplicacion contra MySQL hasta crear la base de datos `hotelera`, porque la conexion fallara si la base aun no existe.
+
+La parte mas delicada es que `KAN-34 Configurar Spring Security` aparece antes que `KAN-30 Implementar sistema JWT`. Es aceptable si en `KAN-34` se deja primero una configuracion base con rutas publicas, `PasswordEncoder`, `AuthenticationManager` y CORS. Luego, en `KAN-30`, se agrega el filtro JWT a esa configuracion.
+
+Recomendacion practica:
+
+```text
+KAN-34 debe crear la estructura de seguridad base.
+KAN-30 debe completar la seguridad agregando JWT.
+```
+
+## KAN-29 Configurar arquitectura de paquetes
+
+Paquetes base del backend:
+
+```text
+src/main/java/com/Grupo1/GestionHoteleria_Backend/config/
+src/main/java/com/Grupo1/GestionHoteleria_Backend/controller/
+src/main/java/com/Grupo1/GestionHoteleria_Backend/service/
+src/main/java/com/Grupo1/GestionHoteleria_Backend/repository/
+src/main/java/com/Grupo1/GestionHoteleria_Backend/entity/
+src/main/java/com/Grupo1/GestionHoteleria_Backend/dto/
+src/main/java/com/Grupo1/GestionHoteleria_Backend/security/
+src/main/java/com/Grupo1/GestionHoteleria_Backend/exception/
+```
+
+Uso recomendado:
+
+```text
+config      -> configuracion general, CORS, SecurityFilterChain
+controller  -> endpoints REST
+service     -> logica de negocio
+repository  -> interfaces JpaRepository
+entity      -> clases JPA
+dto         -> requests y responses
+security    -> JWT, filtros, UserDetails
+exception   -> manejo global de errores
+```
+
+Resultado esperado:
+
+```text
+La aplicacion mantiene una arquitectura profesional por capas.
+Cada archivo nuevo tiene un paquete claro donde vivir.
+```
+
 ## KAN-25 Configurar conexion MySQL
 
 Configurar `src/main/resources/application.properties` usando variables de entorno:
@@ -35,6 +98,8 @@ Ejemplo de `DB_URL`:
 ```text
 jdbc:mysql://localhost:3306/hotelera?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 ```
+
+Nota: en este punto se configura la conexion, pero la prueba real de conexion debe hacerse despues de `KAN-26`.
 
 ## KAN-26 Crear base de datos hotelera
 
@@ -65,59 +130,86 @@ Produccion:  spring.jpa.hibernate.ddl-auto=validate
 
 Mas adelante, para produccion, conviene manejar cambios de base de datos con Flyway o Liquibase.
 
-## KAN-28 Configurar variables de entorno
+## KAN-31 Crear entidad Usuario
 
-Variables minimas recomendadas:
-
-```text
-DB_URL
-DB_USERNAME
-DB_PASSWORD
-JWT_SECRET
-JWT_EXPIRATION_MS
-FRONTEND_URL
-```
-
-Ejemplo local:
+Crear `entity/Usuario.java` con campos minimos:
 
 ```text
-DB_URL=jdbc:mysql://localhost:3306/hotelera?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-DB_USERNAME=root
-DB_PASSWORD=tu_password
-JWT_SECRET=clave_super_segura_de_minimo_32_caracteres
-JWT_EXPIRATION_MS=86400000
-FRONTEND_URL=http://localhost:5173
+id
+nombre
+email
+password
+rol
+createdAt
+updatedAt
 ```
 
-Importante: `JWT_SECRET` debe ser largo. Usar minimo 32 caracteres.
-
-## KAN-29 Configurar arquitectura de paquetes
-
-Paquetes base del backend:
+Recomendaciones:
 
 ```text
-src/main/java/com/Grupo1/GestionHoteleria_Backend/config/
-src/main/java/com/Grupo1/GestionHoteleria_Backend/controller/
-src/main/java/com/Grupo1/GestionHoteleria_Backend/service/
-src/main/java/com/Grupo1/GestionHoteleria_Backend/repository/
-src/main/java/com/Grupo1/GestionHoteleria_Backend/entity/
-src/main/java/com/Grupo1/GestionHoteleria_Backend/dto/
-src/main/java/com/Grupo1/GestionHoteleria_Backend/security/
-src/main/java/com/Grupo1/GestionHoteleria_Backend/exception/
+email debe ser unico.
+password debe guardarse encriptado con BCrypt.
+rol puede iniciar como CLIENTE.
+createdAt y updatedAt pueden manejarse con @PrePersist y @PreUpdate.
 ```
 
-Uso recomendado:
+Tambien crear `entity/Rol.java` como enum:
 
 ```text
-config      -> configuracion general, CORS, SecurityFilterChain
-controller  -> endpoints REST
-service     -> logica de negocio
-repository  -> interfaces JpaRepository
-entity      -> clases JPA
-dto         -> requests y responses
-security    -> JWT, filtros, UserDetails
-exception   -> manejo global de errores
+ADMIN
+CLIENTE
 ```
+
+Crear tambien `repository/UsuarioRepository.java`:
+
+```text
+findByEmail(String email)
+existsByEmail(String email)
+```
+
+## KAN-34 Configurar Spring Security
+
+Crear `config/SecurityConfig.java`.
+
+En esta etapa, como JWT todavia no esta implementado, configurar la base de seguridad:
+
+```text
+SecurityFilterChain
+AuthenticationManager
+AuthenticationProvider
+PasswordEncoder
+CorsConfigurationSource
+```
+
+Rutas publicas:
+
+```text
+POST /api/auth/login
+POST /api/auth/register
+GET /api/habitaciones/**
+```
+
+Rutas protegidas:
+
+```text
+/api/reservas/**
+/api/pagos/**
+/api/clientes/**
+```
+
+Configurar seguridad stateless:
+
+```text
+SessionCreationPolicy.STATELESS
+```
+
+Configurar CORS usando `FRONTEND_URL`:
+
+```text
+http://localhost:5173
+```
+
+Nota: el filtro JWT se conecta en `KAN-30`, cuando ya exista `JwtAuthenticationFilter`.
 
 ## KAN-30 Implementar sistema JWT
 
@@ -153,36 +245,6 @@ Header esperado:
 
 ```text
 Authorization: Bearer <token>
-```
-
-## KAN-31 Crear entidad Usuario
-
-Crear `entity/Usuario.java` con campos minimos:
-
-```text
-id
-nombre
-email
-password
-rol
-createdAt
-updatedAt
-```
-
-Recomendaciones:
-
-```text
-email debe ser unico.
-password debe guardarse encriptado con BCrypt.
-rol puede iniciar como CLIENTE.
-createdAt y updatedAt pueden manejarse con @PrePersist y @PreUpdate.
-```
-
-Tambien crear `entity/Rol.java` como enum:
-
-```text
-ADMIN
-CLIENTE
 ```
 
 ## KAN-32 Crear endpoint Login
@@ -272,65 +334,50 @@ Respuesta sugerida si se inicia sesion automaticamente:
 }
 ```
 
-## KAN-34 Configurar Spring Security
+## KAN-28 Configurar variables de entorno
 
-Crear `config/SecurityConfig.java`.
-
-Rutas publicas:
+Variables minimas recomendadas:
 
 ```text
-POST /api/auth/login
-POST /api/auth/register
-GET /api/habitaciones/**
+DB_URL
+DB_USERNAME
+DB_PASSWORD
+JWT_SECRET
+JWT_EXPIRATION_MS
+FRONTEND_URL
 ```
 
-Rutas protegidas:
+Ejemplo local:
 
 ```text
-/api/reservas/**
-/api/pagos/**
-/api/clientes/**
+DB_URL=jdbc:mysql://localhost:3306/hotelera?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+DB_USERNAME=root
+DB_PASSWORD=tu_password
+JWT_SECRET=clave_super_segura_de_minimo_32_caracteres
+JWT_EXPIRATION_MS=86400000
+FRONTEND_URL=http://localhost:5173
 ```
 
-Configurar seguridad stateless:
+Importante: `JWT_SECRET` debe ser largo. Usar minimo 32 caracteres.
 
-```text
-SessionCreationPolicy.STATELESS
-```
-
-Configurar CORS usando `FRONTEND_URL`:
-
-```text
-http://localhost:5173
-```
-
-Beans recomendados:
-
-```text
-SecurityFilterChain
-AuthenticationManager
-PasswordEncoder
-CorsConfigurationSource
-```
+Aunque Jira lo deje al final, estas variables se pueden definir desde el inicio en `.env`, variables del sistema o configuracion del IDE. Lo importante es validarlas al final de la configuracion.
 
 ## Orden recomendado de implementacion
 
-1. Completar `application.properties`.
-2. Crear base de datos `hotelera`.
-3. Crear entidad `Usuario`.
-4. Crear enum `Rol`.
-5. Crear `UsuarioRepository`.
-6. Crear DTOs de autenticacion.
-7. Crear `AuthService`.
-8. Crear `JwtService`.
-9. Crear `CustomUserDetailsService`.
-10. Crear `JwtAuthenticationFilter`.
-11. Crear `SecurityConfig`.
-12. Crear `AuthController`.
-13. Probar `POST /api/auth/register`.
-14. Probar `POST /api/auth/login`.
-15. Probar acceso a una ruta protegida con `Authorization: Bearer <token>`.
-16. Conectar el frontend usando `VITE_API_URL`.
+1. `KAN-29` Crear paquetes base.
+2. `KAN-25` Configurar propiedades de conexion MySQL.
+3. `KAN-26` Crear base de datos `hotelera`.
+4. `KAN-27` Configurar JPA/Hibernate.
+5. `KAN-31` Crear `Usuario`, `Rol` y `UsuarioRepository`.
+6. `KAN-34` Configurar Spring Security base.
+7. `KAN-30` Implementar `JwtService`, `JwtAuthenticationFilter` y `CustomUserDetailsService`.
+8. `KAN-32` Crear endpoint `POST /api/auth/login`.
+9. `KAN-33` Crear endpoint `POST /api/auth/register`.
+10. `KAN-28` Validar variables de entorno finales.
+11. Probar `POST /api/auth/register`.
+12. Probar `POST /api/auth/login`.
+13. Probar acceso a una ruta protegida con `Authorization: Bearer <token>`.
+14. Conectar el frontend usando `VITE_API_URL`.
 
 ## Dependencias necesarias
 
