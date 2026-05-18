@@ -25,8 +25,8 @@ Nuevo orden de tareas:
 
 ```text
 1. KAN-29 Configurar arquitectura de paquetes
-2. KAN-25 Configurar conexion MySQL
-3. KAN-26 Crear base de datos hotelera
+2. KAN-26 Crear base de datos HotelDB
+3. KAN-25 Configurar conexion MySQL
 4. KAN-27 Configurar JPA/Hibernate
 5. KAN-31 Crear entidad Usuario
 6. KAN-34 Configurar Spring Security
@@ -36,7 +36,7 @@ Nuevo orden de tareas:
 10. KAN-28 Configurar variables de entorno
 ```
 
-Este orden es valido, pero con una observacion importante: `KAN-25` puede hacerse antes de `KAN-26` solo como configuracion de archivos. No se debe intentar levantar la aplicacion contra MySQL hasta crear la base de datos `hotelera`, porque la conexion fallara si la base aun no existe.
+Este orden es correcto: primero se define la arquitectura de paquetes, luego se crea la base de datos `HotelDB` y despues se configura la conexion MySQL del backend apuntando a esa base. Asi se evita que Spring intente conectarse a una base que todavia no existe.
 
 La parte mas delicada es que `KAN-34 Configurar Spring Security` aparece antes que `KAN-30 Implementar sistema JWT`. Es aceptable si en `KAN-34` se deja primero una configuracion base con rutas publicas, `PasswordEncoder`, `AuthenticationManager` y CORS. Luego, en `KAN-30`, se agrega el filtro JWT a esa configuracion.
 
@@ -82,6 +82,22 @@ La aplicacion mantiene una arquitectura profesional por capas.
 Cada archivo nuevo tiene un paquete claro donde vivir.
 ```
 
+## KAN-26 Crear base de datos HotelDB
+
+Crear la base de datos en MySQL:
+
+```sql
+CREATE DATABASE HotelDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Verificar que exista:
+
+```sql
+SHOW DATABASES;
+```
+
+Durante desarrollo, se recomienda dejar que JPA/Hibernate cree o actualice las tablas automaticamente.
+
 ## KAN-25 Configurar conexion MySQL
 
 Configurar `src/main/resources/application.properties` usando variables de entorno:
@@ -96,20 +112,10 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 Ejemplo de `DB_URL`:
 
 ```text
-jdbc:mysql://localhost:3306/hotelera?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+jdbc:mysql://localhost:3306/HotelDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 ```
 
-Nota: en este punto se configura la conexion, pero la prueba real de conexion debe hacerse despues de `KAN-26`.
-
-## KAN-26 Crear base de datos hotelera
-
-Crear la base de datos en MySQL:
-
-```sql
-CREATE DATABASE hotelera CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-Durante desarrollo, se recomienda dejar que JPA/Hibernate cree o actualice las tablas automaticamente.
+Nota: la conexion debe probarse despues de crear `HotelDB`.
 
 ## KAN-27 Configurar JPA/Hibernate
 
@@ -350,9 +356,9 @@ FRONTEND_URL
 Ejemplo local:
 
 ```text
-DB_URL=jdbc:mysql://localhost:3306/hotelera?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+DB_URL=jdbc:mysql://localhost:3306/HotelDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 DB_USERNAME=root
-DB_PASSWORD=tu_password
+DB_PASSWORD=admin
 JWT_SECRET=clave_super_segura_de_minimo_32_caracteres
 JWT_EXPIRATION_MS=86400000
 FRONTEND_URL=http://localhost:5173
@@ -365,8 +371,8 @@ Aunque Jira lo deje al final, estas variables se pueden definir desde el inicio 
 ## Orden recomendado de implementacion
 
 1. `KAN-29` Crear paquetes base.
-2. `KAN-25` Configurar propiedades de conexion MySQL.
-3. `KAN-26` Crear base de datos `hotelera`.
+2. `KAN-26` Crear base de datos `HotelDB`.
+3. `KAN-25` Configurar propiedades de conexion MySQL.
 4. `KAN-27` Configurar JPA/Hibernate.
 5. `KAN-31` Crear `Usuario`, `Rol` y `UsuarioRepository`.
 6. `KAN-34` Configurar Spring Security base.
