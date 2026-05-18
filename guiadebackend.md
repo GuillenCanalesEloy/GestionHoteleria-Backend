@@ -124,7 +124,9 @@ Agregar configuracion JPA en `application.properties`:
 ```properties
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
 spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.jdbc.time_zone=UTC
 ```
 
 Recomendacion:
@@ -132,6 +134,14 @@ Recomendacion:
 ```text
 Desarrollo:  spring.jpa.hibernate.ddl-auto=update
 Produccion:  spring.jpa.hibernate.ddl-auto=validate
+```
+
+Detalles importantes:
+
+```text
+open-in-view=false evita consultas tardias desde la capa web.
+Hibernate detecta automaticamente el dialecto de MySQL desde la conexion.
+hibernate.jdbc.time_zone=UTC mantiene fechas consistentes entre Java y MySQL.
 ```
 
 Mas adelante, para produccion, conviene manejar cambios de base de datos con Flyway o Liquibase.
