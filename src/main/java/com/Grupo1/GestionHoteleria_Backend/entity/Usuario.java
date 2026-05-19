@@ -68,6 +68,9 @@ public class Usuario implements UserDetails {
 	@PrePersist
 	void prePersist() {
 		LocalDateTime now = LocalDateTime.now();
+		if (rol == null) {
+			rol = Rol.CLIENTE;
+		}
 		if (createdAt == null) {
 			createdAt = now;
 		}
@@ -81,7 +84,7 @@ public class Usuario implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
+		return List.of(new SimpleGrantedAuthority(rol.getAuthority()));
 	}
 
 	@Override

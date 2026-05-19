@@ -505,6 +505,76 @@ No se versionan credenciales reales como password o JWT_SECRET.
 13. Probar acceso a una ruta protegida con `Authorization: Bearer <token>`.
 14. Conectar el frontend usando `VITE_API_URL`.
 
+## Orden recomendado para las siguientes tareas
+
+Este orden separa el trabajo de esta semana, enfocado en usuarios y habitaciones, del trabajo de la siguiente semana, enfocado en reservas y dashboard. La idea es evitar tareas repetidas y dejar cada bloque con dependencias claras.
+
+### Esta semana: usuarios y habitaciones
+
+1. `KAN-36` Implementar roles `ADMIN`/`CLIENTE`.
+2. `KAN-37` Proteger endpoints por rol.
+3. `KAN-38` Crear DTOs de Usuario.
+4. `KAN-39` CRUD de Usuario.
+5. `KAN-40` Crear endpoints para usuario.
+6. `KAN-41` Testing seguridad usuarios/roles.
+7. `KAN-42` Crear tipos de habitacion.
+8. `KAN-43` Crear entidad Habitacion.
+9. `KAN-44` Crear repositorios y servicios de habitaciones.
+10. `KAN-46` CRUD de habitaciones.
+11. Nueva tarea: Validaciones backend habitaciones.
+12. Nueva tarea: Manejo de errores `NotFound`.
+13. Nueva tarea: Crear endpoints de habitaciones.
+14. Nueva tarea: Paginacion y ordenamiento.
+15. Nueva tarea: Implementar filtros simples de habitaciones.
+16. Nueva tarea: Testing CRUD habitaciones.
+
+Notas:
+
+```text
+La tarea de filtros simples de habitaciones debe limitarse a:
+- tipo de habitacion
+- precio
+- capacidad
+- estado: DISPONIBLE, OCUPADA, MANTENIMIENTO
+
+La disponibilidad real por rango de fechas no debe hacerse en la tarea de filtros simples.
+Esa validacion pertenece a KAN-48, dentro del sistema de reservas.
+```
+
+### Siguiente semana: reservas y dashboard
+
+1. `KAN-46` Sistema de reservas.
+2. `KAN-47` Creacion de endpoints de reservas.
+3. `KAN-48` Validar disponibilidad de fechas.
+4. `KAN-49` Evitar reservas duplicadas.
+5. `KAN-50` Dashboard administrativo.
+6. `KAN-51` Crear reportes.
+7. `KAN-52` Integrar frontend con reservas.
+8. `KAN-53` Testing sistema reservas.
+9. `KAN-54` Optimizacion consultas SQL.
+10. `KAN-55` Correccion errores finales sprint.
+
+Notas:
+
+```text
+KAN-46 debe incluir el modelo principal de reservas y la relacion con habitaciones.
+KAN-48 debe validar disponibilidad usando fechas de entrada y salida.
+KAN-49 debe impedir reservas duplicadas o solapadas para la misma habitacion.
+KAN-54 debe dejarse despues de tener consultas reales de reservas, dashboard y reportes.
+```
+
+### Tareas que no se deben duplicar
+
+No agregar como tareas separadas en esta semana:
+
+```text
+Crear modelo base de reservas       -> incluido en KAN-46
+Relacionar reservas con habitaciones -> incluido en KAN-46
+Validar disponibilidad por fechas    -> incluido en KAN-48
+Evitar reservas duplicadas           -> incluido en KAN-49
+Optimizacion de consultas SQL        -> incluido en KAN-54
+```
+
 ## Dependencias necesarias
 
 Dependencias ya contempladas en `pom.xml`:
