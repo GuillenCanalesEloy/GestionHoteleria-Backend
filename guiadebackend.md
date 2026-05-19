@@ -237,6 +237,17 @@ http://localhost:5173
 
 Nota: el filtro JWT se conecta en `KAN-30`, cuando ya exista `JwtAuthenticationFilter`.
 
+Resultado esperado:
+
+```text
+La API trabaja sin sesiones de servidor usando SessionCreationPolicy.STATELESS.
+POST /api/auth/login y POST /api/auth/register quedan publicos.
+GET /api/habitaciones/** queda publico para el catalogo del frontend.
+El resto de endpoints requiere autenticacion.
+CORS permite llamadas desde FRONTEND_URL e incluye el header Authorization.
+El filtro JWT se ejecuta antes de UsernamePasswordAuthenticationFilter.
+```
+
 ## KAN-30 Implementar sistema JWT
 
 Crear en `security/`:
