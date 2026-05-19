@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -34,6 +35,13 @@ public class SecurityConfig {
 			"/api/auth/register"
 	};
 
+	private static final String[] ADMIN_ENDPOINTS = {
+			"/api/usuarios/**",
+			"/api/clientes/**",
+			"/api/dashboard/**",
+			"/api/reportes/**"
+	};
+
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final UserDetailsService userDetailsService;
 
@@ -47,8 +55,15 @@ public class SecurityConfig {
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers(AUTH_WHITELIST).permitAll()
-						.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/habitaciones/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/habitaciones/**").permitAll()
+						.requestMatchers(ADMIN_ENDPOINTS).hasRole("ADMIN")
+						.requestMatchers(HttpMethod.POST, "/api/habitaciones/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.PUT, "/api/habitaciones/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.PATCH, "/api/habitaciones/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.DELETE, "/api/habitaciones/**").hasRole("ADMIN")
+						.requestMatchers("/api/reservas/**", "/api/pagos/**").hasAnyRole("ADMIN", "CLIENTE")
 						.anyRequest().authenticated()
 				)
 				.authenticationProvider(authenticationProvider())
