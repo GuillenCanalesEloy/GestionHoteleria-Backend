@@ -54,6 +54,12 @@ public class SecurityConfig {
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(exception -> exception
+						.authenticationEntryPoint((request, response, authException) ->
+								response.setStatus(org.springframework.http.HttpStatus.UNAUTHORIZED.value()))
+						.accessDeniedHandler((request, response, accessDeniedException) ->
+								response.setStatus(org.springframework.http.HttpStatus.FORBIDDEN.value()))
+				)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers(AUTH_WHITELIST).permitAll()
