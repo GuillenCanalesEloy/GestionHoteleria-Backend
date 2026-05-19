@@ -441,7 +441,14 @@ JWT_EXPIRATION_MS
 FRONTEND_URL
 ```
 
-Ejemplo local:
+Variables opcionales para desarrollo:
+
+```text
+JPA_DDL_AUTO
+JPA_SHOW_SQL
+```
+
+Ejemplo local basado en `.env.example`:
 
 ```text
 DB_URL=jdbc:mysql://localhost:3306/HotelDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
@@ -450,11 +457,36 @@ DB_PASSWORD=admin
 JWT_SECRET=clave_super_segura_de_minimo_32_caracteres
 JWT_EXPIRATION_MS=86400000
 FRONTEND_URL=http://localhost:5173
+JPA_DDL_AUTO=update
+JPA_SHOW_SQL=true
 ```
 
 Importante: `JWT_SECRET` debe ser largo. Usar minimo 32 caracteres.
 
-Aunque Jira lo deje al final, estas variables se pueden definir desde el inicio en `.env`, variables del sistema o configuracion del IDE. Lo importante es validarlas al final de la configuracion.
+El archivo `.env.example` se versiona como plantilla. El archivo `.env` real no se debe subir al repositorio porque puede contener credenciales locales.
+
+En PowerShell se pueden definir variables para una ejecucion local asi:
+
+```powershell
+$env:DB_URL="jdbc:mysql://localhost:3306/HotelDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+$env:DB_USERNAME="root"
+$env:DB_PASSWORD="admin"
+$env:JWT_SECRET="clave_super_segura_de_minimo_32_caracteres"
+$env:JWT_EXPIRATION_MS="86400000"
+$env:FRONTEND_URL="http://localhost:5173"
+.\mvnw.cmd spring-boot:run
+```
+
+Tambien se pueden configurar en el IDE dentro de la configuracion de ejecucion de Spring Boot.
+
+Resultado esperado:
+
+```text
+application.properties lee configuracion desde variables de entorno.
+.env.example documenta las variables necesarias.
+.env queda ignorado por Git.
+No se versionan credenciales reales como password o JWT_SECRET.
+```
 
 ## Orden recomendado de implementacion
 
