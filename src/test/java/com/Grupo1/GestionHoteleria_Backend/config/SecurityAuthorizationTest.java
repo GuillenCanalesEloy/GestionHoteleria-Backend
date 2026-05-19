@@ -20,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -50,15 +49,35 @@ class SecurityAuthorizationTest {
 	@Test
 	@WithMockUser(roles = "CLIENTE")
 	void shouldRejectClienteWhenCreatingHabitaciones() throws Exception {
-		mockMvc.perform(post("/api/habitaciones"))
+		mockMvc.perform(post("/api/habitaciones")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "901",
+								  "piso": 9,
+								  "tipo": "SIMPLE",
+								  "capacidad": 1,
+								  "precioPorNoche": 120.00
+								}
+								"""))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void shouldAllowAdminWhenCreatingHabitaciones() throws Exception {
-		mockMvc.perform(post("/api/habitaciones"))
-				.andExpect(status().isOk());
+		mockMvc.perform(post("/api/habitaciones")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "901",
+								  "piso": 9,
+								  "tipo": "SIMPLE",
+								  "capacidad": 1,
+								  "precioPorNoche": 120.00
+								}
+								"""))
+				.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -188,16 +207,6 @@ class SecurityAuthorizationTest {
 
 	@RestController
 	static class TestEndpoints {
-
-		@GetMapping("/api/habitaciones")
-		ResponseEntity<Void> getHabitaciones() {
-			return ResponseEntity.ok().build();
-		}
-
-		@PostMapping("/api/habitaciones")
-		ResponseEntity<Void> createHabitacion() {
-			return ResponseEntity.ok().build();
-		}
 
 		@GetMapping("/api/reservas")
 		ResponseEntity<Void> getReservas() {
