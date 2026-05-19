@@ -351,6 +351,24 @@ Respuesta sugerida:
 }
 ```
 
+Resultado esperado:
+
+```text
+El endpoint POST /api/auth/login recibe email y password.
+El request se valida con Bean Validation.
+AuthService autentica las credenciales usando AuthenticationManager.
+Si las credenciales son correctas, se genera un JWT.
+La respuesta incluye token, type, email, nombre y rol.
+Si las credenciales son incorrectas, se responde 401.
+```
+
+Pruebas recomendadas:
+
+```text
+AuthController debe responder 200 con AuthResponse en login correcto.
+AuthService debe invocar AuthenticationManager y generar JWT.
+```
+
 ## KAN-33 Crear endpoint Register
 
 Crear `dto/RegisterRequest.java`:
