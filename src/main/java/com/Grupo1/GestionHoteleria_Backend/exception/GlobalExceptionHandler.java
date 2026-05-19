@@ -21,6 +21,11 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), null);
 	}
 
+	@ExceptionHandler(UsuarioNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleUsuarioNotFound(UsuarioNotFoundException exception) {
+		return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), null);
+	}
+
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ErrorResponse> handleBadCredentials() {
 		return buildResponse(HttpStatus.UNAUTHORIZED, "Email o contrasena incorrectos", null);
