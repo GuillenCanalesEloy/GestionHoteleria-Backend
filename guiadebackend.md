@@ -273,6 +273,25 @@ Header esperado:
 Authorization: Bearer <token>
 ```
 
+Resultado esperado:
+
+```text
+JwtService genera tokens firmados con el email como subject.
+JwtService valida tokens validos y rechaza tokens malformados o de otro usuario.
+JwtAuthenticationFilter autentica peticiones con header Bearer valido.
+JwtAuthenticationFilter deja la peticion sin autenticar si el token es invalido o el usuario no existe.
+CustomUserDetailsService carga usuarios desde UsuarioRepository usando el email.
+```
+
+Pruebas recomendadas:
+
+```text
+Generar token y extraer email.
+Validar token para el mismo usuario.
+Rechazar token para un usuario diferente.
+Rechazar token malformado.
+```
+
 ## KAN-32 Crear endpoint Login
 
 Crear `dto/LoginRequest.java`:
