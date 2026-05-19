@@ -408,6 +408,26 @@ Respuesta sugerida si se inicia sesion automaticamente:
 }
 ```
 
+Resultado esperado:
+
+```text
+El endpoint POST /api/auth/register recibe nombre, email y password.
+El request se valida con Bean Validation.
+AuthService verifica que el email no exista.
+La password se guarda encriptada con BCryptPasswordEncoder.
+El usuario se guarda con rol CLIENTE.
+La respuesta devuelve token JWT y datos basicos del usuario.
+Si el email ya existe, se responde 409.
+```
+
+Pruebas recomendadas:
+
+```text
+AuthController debe responder 201 con AuthResponse en registro correcto.
+AuthService debe encriptar password y guardar usuario con rol CLIENTE.
+AuthService debe rechazar emails duplicados.
+```
+
 ## KAN-28 Configurar variables de entorno
 
 Variables minimas recomendadas:

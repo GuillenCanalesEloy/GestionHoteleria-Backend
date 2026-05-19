@@ -52,4 +52,31 @@ class AuthControllerTest {
 				.andExpect(jsonPath("$.nombre").value("Usuario Demo"))
 				.andExpect(jsonPath("$.rol").value("CLIENTE"));
 	}
+
+	@Test
+	void shouldRegisterAndReturnCreatedAuthResponse() throws Exception {
+		when(authService.register(any())).thenReturn(new AuthResponse(
+				"jwt-nuevo",
+				"Bearer",
+				"nuevo@correo.com",
+				"Nuevo Usuario",
+				Rol.CLIENTE
+		));
+
+		mockMvc.perform(post("/api/auth/register")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "nombre": "Nuevo Usuario",
+								  "email": "nuevo@correo.com",
+								  "password": "12345678"
+								}
+								"""))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.token").value("jwt-nuevo"))
+				.andExpect(jsonPath("$.type").value("Bearer"))
+				.andExpect(jsonPath("$.email").value("nuevo@correo.com"))
+				.andExpect(jsonPath("$.nombre").value("Nuevo Usuario"))
+				.andExpect(jsonPath("$.rol").value("CLIENTE"));
+	}
 }
