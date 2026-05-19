@@ -21,6 +21,16 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), null);
 	}
 
+	@ExceptionHandler(HabitacionNumeroAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponse> handleHabitacionNumeroAlreadyExists(HabitacionNumeroAlreadyExistsException exception) {
+		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), null);
+	}
+
+	@ExceptionHandler(HabitacionNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleHabitacionNotFound(HabitacionNotFoundException exception) {
+		return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), null);
+	}
+
 	@ExceptionHandler(UsuarioNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleUsuarioNotFound(UsuarioNotFoundException exception) {
 		return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), null);
