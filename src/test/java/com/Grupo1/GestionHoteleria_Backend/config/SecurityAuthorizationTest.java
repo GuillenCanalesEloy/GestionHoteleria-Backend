@@ -91,11 +91,6 @@ class SecurityAuthorizationTest {
 			return ResponseEntity.ok().build();
 		}
 
-		@GetMapping("/api/usuarios")
-		ResponseEntity<Void> getUsuarios() {
-			return ResponseEntity.ok().build();
-		}
-
 		@GetMapping("/api/reservas")
 		ResponseEntity<Void> getReservas() {
 			return ResponseEntity.ok().build();
