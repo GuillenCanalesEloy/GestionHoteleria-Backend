@@ -507,13 +507,13 @@ No se versionan credenciales reales como password o JWT_SECRET.
 
 ## Orden recomendado para las siguientes tareas
 
-Este orden separa el trabajo de esta semana, enfocado en usuarios y habitaciones, del trabajo de la siguiente semana, enfocado en reservas y dashboard. La idea es evitar tareas repetidas y dejar cada bloque con dependencias claras.
+Los KAN desarrollados hasta ahora llegan a `KAN-46` CRUD de habitaciones. El siguiente bloque debe cerrar habitaciones a nivel de validaciones, errores, endpoints, paginacion y pruebas; despues debe abrir reservas y dashboard con tareas propias para no esconder trabajo grande dentro de testing u optimizacion.
 
-### Esta semana: usuarios y habitaciones
+### Bloque completado: usuarios y habitaciones base
 
 1. `KAN-36` Implementar roles `ADMIN`/`CLIENTE`.
 2. `KAN-37` Proteger endpoints por rol.
-3. `KAN-38` Crear DTOs de Usuario.
+3. `KAN-38` "Crear DTOs de Usuario."
 4. `KAN-39` CRUD de Usuario.
 5. `KAN-40` Crear endpoints para usuario.
 6. `KAN-41` Testing seguridad usuarios/roles.
@@ -521,58 +521,264 @@ Este orden separa el trabajo de esta semana, enfocado en usuarios y habitaciones
 8. `KAN-43` Crear entidad Habitacion.
 9. `KAN-44` Crear repositorios y servicios de habitaciones.
 10. `KAN-46` CRUD de habitaciones.
-11. Nueva tarea: Validaciones backend habitaciones.
-12. Nueva tarea: Manejo de errores `NotFound`.
-13. Nueva tarea: Crear endpoints de habitaciones.
-14. Nueva tarea: Paginacion y ordenamiento.
-15. Nueva tarea: Implementar filtros simples de habitaciones.
-16. Nueva tarea: Testing CRUD habitaciones.
 
-Notas:
+### Nuevo bloque en Jira: habitaciones, reservas y dashboard
 
-```text
-La tarea de filtros simples de habitaciones debe limitarse a:
-- tipo de habitacion
-- precio
-- capacidad
-- estado: DISPONIBLE, OCUPADA, MANTENIMIENTO
+1. `KAN-47` Validaciones backend habitaciones.
+2. `KAN-48` Manejo de errores `NotFound`.
+3. `KAN-49` Crear endpoints de habitaciones.
+4. `KAN-50` Paginacion y ordenamiento.
+5. `KAN-51` Implementar filtros simples de habitaciones.
+6. `KAN-52` Testing CRUD habitaciones.
+7. `KAN-53` Crear entidad Reserva y enum EstadoReserva.
+8. `KAN-54` Crear repositorio, DTOs y servicio de reservas.
+9. `KAN-55` Crear endpoints de reservas.
+10. `KAN-56` Validar disponibilidad por rango de fechas.
+11. `KAN-58` Evitar reservas duplicadas o solapadas.
+12. `KAN-59` Definir permisos de reservas por rol.
+13. `KAN-60` Testing sistema reservas.
+14. `KAN-61` Crear endpoints de dashboard administrativo.
+15. `KAN-62` Crear metricas y reportes basicos.
+16. `KAN-63` Documentar contrato de API de habitaciones y reservas.
+17. `KAN-64` Optimizacion consultas SQL.
+18. `KAN-65` Correccion errores finales sprint.
 
-La disponibilidad real por rango de fechas no debe hacerse en la tarea de filtros simples.
-Esa validacion pertenece a KAN-48, dentro del sistema de reservas.
-```
-
-### Siguiente semana: reservas y dashboard
-
-1. `KAN-46` Sistema de reservas.
-2. `KAN-47` Creacion de endpoints de reservas.
-3. `KAN-48` Validar disponibilidad de fechas.
-4. `KAN-49` Evitar reservas duplicadas.
-5. `KAN-50` Dashboard administrativo.
-6. `KAN-51` Crear reportes.
-7. `KAN-52` Integrar frontend con reservas.
-8. `KAN-53` Testing sistema reservas.
-9. `KAN-54` Optimizacion consultas SQL.
-10. `KAN-55` Correccion errores finales sprint.
-
-Notas:
+Nota sobre `KAN-57`:
 
 ```text
-KAN-46 debe incluir el modelo principal de reservas y la relacion con habitaciones.
-KAN-48 debe validar disponibilidad usando fechas de entrada y salida.
-KAN-49 debe impedir reservas duplicadas o solapadas para la misma habitacion.
-KAN-54 debe dejarse despues de tener consultas reales de reservas, dashboard y reportes.
+KAN-57 fue eliminado del tablero.
+El orden continua correctamente desde KAN-56 a KAN-58.
+No crear una tarea nueva con ese numero salvo que Jira vuelva a reservarlo.
 ```
+
+### Alcance recomendado por tarea
+
+`KAN-47` Validaciones backend habitaciones:
+
+```text
+Validar numero obligatorio y unico.
+Validar piso positivo.
+Validar capacidad mayor que cero.
+Validar precioPorNoche mayor que cero.
+Validar tipo y estado con enums permitidos.
+Validar descripcion con longitud maxima razonable.
+Responder 400 con mensajes claros cuando falle Bean Validation.
+```
+
+`KAN-48` Manejo de errores `NotFound`:
+
+```text
+Centralizar excepciones en GlobalExceptionHandler.
+Responder 404 cuando no exista una habitacion, usuario o reserva.
+Mantener una estructura estable de error: timestamp, status, error, message, path.
+No exponer stack traces ni mensajes internos.
+```
+
+`KAN-49` Crear endpoints de habitaciones:
+
+```text
+GET /api/habitaciones
+GET /api/habitaciones/{id}
+POST /api/habitaciones
+PUT /api/habitaciones/{id}
+PATCH /api/habitaciones/{id}
+DELETE /api/habitaciones/{id}
+```
+
+Reglas:
+
+```text
+GET puede ser publico para catalogo.
+POST, PUT, PATCH y DELETE deben requerir rol ADMIN.
+Las respuestas deben usar DTOs, no entidades JPA directas.
+```
+
+`KAN-50` Paginacion y ordenamiento:
+
+```text
+Agregar parametros page, size, sortBy y direction en GET /api/habitaciones.
+Usar Pageable/PageRequest de Spring Data.
+Devolver metadata de paginacion: page, size, totalElements, totalPages.
+Limitar size maximo para evitar consultas pesadas.
+Ordenar por campos permitidos: id, numero, piso, tipo, estado, capacidad, precioPorNoche.
+```
+
+`KAN-51` Implementar filtros simples de habitaciones:
+
+```text
+Filtrar por tipo.
+Filtrar por estado.
+Filtrar por capacidad minima.
+Filtrar por precio minimo.
+Filtrar por precio maximo.
+Permitir combinar filtros con paginacion y ordenamiento.
+```
+
+Nota:
+
+```text
+No incluir disponibilidad real por fechas en KAN-51.
+Esa regla depende de Reserva y debe quedar en KAN-56.
+```
+
+`KAN-52` Testing CRUD habitaciones:
+
+```text
+Tests unitarios de HabitacionService.
+Tests de HabitacionController con MockMvc.
+Tests de validacion 400.
+Tests de NotFound 404.
+Tests de seguridad: GET publico y escritura solo ADMIN.
+Tests de paginacion, ordenamiento y filtros.
+```
+
+`KAN-53` Crear entidad Reserva y enum EstadoReserva:
+
+```text
+Crear Reserva con relacion a Usuario y Habitacion.
+Definir fechaEntrada y fechaSalida.
+Definir cantidadHuespedes, precioTotal y estado.
+Crear EstadoReserva con valores iniciales: PENDIENTE, CONFIRMADA, CANCELADA, FINALIZADA.
+Agregar timestamps createdAt y updatedAt.
+Agregar indices para habitacion_id, usuario_id, fecha_entrada y fecha_salida.
+```
+
+`KAN-54` Crear repositorio, DTOs y servicio de reservas:
+
+```text
+Crear ReservaRepository.
+Crear CreateReservaRequest, UpdateReservaRequest, ReservaResponse y filtros.
+Crear ReservaService.
+Calcular precioTotal segun noches y precioPorNoche.
+Validar que fechaSalida sea posterior a fechaEntrada.
+Validar que cantidadHuespedes no supere capacidad de la habitacion.
+```
+
+`KAN-55` Crear endpoints de reservas:
+
+```text
+GET /api/reservas
+GET /api/reservas/{id}
+POST /api/reservas
+PATCH /api/reservas/{id}/estado
+DELETE /api/reservas/{id}
+```
+
+Reglas:
+
+```text
+CLIENTE puede crear reservas y consultar sus propias reservas.
+ADMIN puede consultar todas las reservas y cambiar estados.
+Las respuestas deben usar DTOs, no entidades JPA directas.
+```
+
+`KAN-56` Validar disponibilidad por rango de fechas:
+
+```text
+Recibir fechaEntrada y fechaSalida.
+Buscar reservas existentes de la misma habitacion.
+Excluir reservas CANCELADAS.
+Rechazar solapes cuando una reserva existente cruza el rango solicitado.
+Exponer filtro de habitaciones disponibles por rango de fechas.
+```
+
+`KAN-58` Evitar reservas duplicadas o solapadas:
+
+```text
+Impedir dos reservas activas para la misma habitacion en fechas cruzadas.
+Agregar test unitario para solapes exactos, parciales e internos.
+Considerar restriccion transaccional para evitar doble reserva en solicitudes simultaneas.
+```
+
+`KAN-59` Definir permisos de reservas por rol:
+
+```text
+CLIENTE solo puede ver, crear o cancelar sus propias reservas.
+ADMIN puede ver, modificar estado y cancelar cualquier reserva.
+Bloquear cambios no autorizados con 403.
+Mantener /api/reservas/** protegido por JWT.
+```
+
+`KAN-60` Testing sistema reservas:
+
+```text
+Debe ejecutarse despues de implementar entidad, servicio y endpoints de reservas.
+Cubrir creacion de reserva, validacion de fechas, disponibilidad y reservas solapadas.
+Cubrir permisos: CLIENTE puede crear/ver sus reservas, ADMIN puede consultar todas.
+```
+
+`KAN-61` Crear endpoints de dashboard administrativo:
+
+```text
+GET /api/dashboard/resumen
+GET /api/dashboard/reservas
+GET /api/dashboard/ocupacion
+GET /api/dashboard/ingresos
+Proteger todos los endpoints con rol ADMIN.
+```
+
+`KAN-62` Crear metricas y reportes basicos:
+
+```text
+Total de habitaciones.
+Habitaciones disponibles, ocupadas y en mantenimiento.
+Reservas activas por estado.
+Ingresos por rango de fechas.
+Ocupacion por tipo de habitacion.
+```
+
+`KAN-63` Documentar contrato de API de habitaciones y reservas:
+
+```text
+Documentar parametros aceptados.
+Documentar ejemplos request/response.
+Documentar codigos HTTP esperados.
+Documentar estructura de errores.
+Actualizar notas para integracion con frontend.
+```
+
+`KAN-64` Optimizacion consultas SQL:
+
+```text
+Revisar consultas de habitaciones, reservas y dashboard.
+Agregar indices necesarios en numero, estado, tipo, habitacion_id, usuario_id, fecha_entrada y fecha_salida.
+Evitar N+1 queries con fetch join, EntityGraph o DTO projections cuando aplique.
+Optimizar solo despues de tener consultas reales y tests funcionales.
+```
+
+`KAN-65` Correccion errores finales sprint:
+
+```text
+Corregir bugs encontrados en pruebas manuales y automatizadas.
+Validar respuestas HTTP y mensajes de error.
+Ejecutar test suite completa.
+Revisar integracion con frontend.
+Actualizar .env.example si aparecen nuevas variables.
+```
+
+### Analisis del orden
+
+Este orden evita problemas porque primero termina el modulo de habitaciones, que es dependencia directa de reservas. Despues crea el modelo de reservas, sus DTOs, servicio y endpoints; recien entonces implementa disponibilidad por fechas, bloqueo de duplicados, permisos y pruebas del sistema de reservas. Dashboard, reportes, documentacion y optimizacion quedan al final porque dependen de consultas reales de habitaciones y reservas.
 
 ### Tareas que no se deben duplicar
 
-No agregar como tareas separadas en esta semana:
+No agregar como tareas separadas si ya quedan cubiertas asi:
 
 ```text
-Crear modelo base de reservas       -> incluido en KAN-46
-Relacionar reservas con habitaciones -> incluido en KAN-46
-Validar disponibilidad por fechas    -> incluido en KAN-48
-Evitar reservas duplicadas           -> incluido en KAN-49
-Optimizacion de consultas SQL        -> incluido en KAN-54
+CRUD de habitaciones                 -> incluido en KAN-46
+Endpoints de habitaciones            -> incluido en KAN-49
+NotFound de habitaciones             -> incluido en KAN-48
+Validaciones de habitaciones         -> incluido en KAN-47
+Paginacion y ordenamiento            -> incluido en KAN-50
+Filtros simples de habitaciones      -> incluido en KAN-51
+Disponibilidad por fechas            -> incluido en KAN-56
+Reservas duplicadas o solapadas      -> incluido en KAN-58
+Testing CRUD habitaciones            -> incluido en KAN-52
+Testing sistema reservas             -> incluido en KAN-60
+Dashboard administrativo             -> incluido en KAN-61
+Metricas y reportes basicos          -> incluido en KAN-62
+Contrato de API                      -> incluido en KAN-63
+Optimizacion de consultas SQL        -> incluido en KAN-64
 ```
 
 ## Dependencias necesarias
