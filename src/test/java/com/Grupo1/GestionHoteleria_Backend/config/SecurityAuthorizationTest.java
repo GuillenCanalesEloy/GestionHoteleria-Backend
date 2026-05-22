@@ -47,6 +47,28 @@ class SecurityAuthorizationTest {
 	}
 
 	@Test
+	void shouldAllowPublicHabitacionDetail() throws Exception {
+		mockMvc.perform(get("/api/habitaciones/999"))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void shouldRejectAnonymousWhenCreatingHabitaciones() throws Exception {
+		mockMvc.perform(post("/api/habitaciones")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "902",
+								  "piso": 9,
+								  "tipo": "SIMPLE",
+								  "capacidad": 1,
+								  "precioPorNoche": 120.00
+								}
+								"""))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
 	@WithMockUser(roles = "CLIENTE")
 	void shouldRejectClienteWhenCreatingHabitaciones() throws Exception {
 		mockMvc.perform(post("/api/habitaciones")
@@ -60,6 +82,39 @@ class SecurityAuthorizationTest {
 								  "precioPorNoche": 120.00
 								}
 								"""))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockUser(roles = "CLIENTE")
+	void shouldRejectClienteWhenUpdatingHabitaciones() throws Exception {
+		mockMvc.perform(put("/api/habitaciones/999")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "902"
+								}
+								"""))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockUser(roles = "CLIENTE")
+	void shouldRejectClienteWhenPatchingHabitaciones() throws Exception {
+		mockMvc.perform(patch("/api/habitaciones/999")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "estado": "MANTENIMIENTO"
+								}
+								"""))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockUser(roles = "CLIENTE")
+	void shouldRejectClienteWhenDeletingHabitaciones() throws Exception {
+		mockMvc.perform(delete("/api/habitaciones/999"))
 				.andExpect(status().isForbidden());
 	}
 
@@ -78,6 +133,39 @@ class SecurityAuthorizationTest {
 								}
 								"""))
 				.andExpect(status().isCreated());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenUpdatingHabitaciones() throws Exception {
+		mockMvc.perform(put("/api/habitaciones/999")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "902"
+								}
+								"""))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenPatchingHabitaciones() throws Exception {
+		mockMvc.perform(patch("/api/habitaciones/999")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "estado": "MANTENIMIENTO"
+								}
+								"""))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenDeletingHabitaciones() throws Exception {
+		mockMvc.perform(delete("/api/habitaciones/999"))
+				.andExpect(status().isNotFound());
 	}
 
 	@Test

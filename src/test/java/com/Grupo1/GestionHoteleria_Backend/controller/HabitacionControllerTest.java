@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -118,6 +119,7 @@ class HabitacionControllerTest {
 								}
 								"""))
 				.andExpect(status().isCreated())
+				.andExpect(header().string("Location", "http://localhost/api/habitaciones/10"))
 				.andExpect(jsonPath("$.id").value(10))
 				.andExpect(jsonPath("$.numero").value("201"))
 				.andExpect(jsonPath("$.tipo").value("DOBLE"));
@@ -184,6 +186,23 @@ class HabitacionControllerTest {
 	}
 
 	@Test
+	void shouldReturnNotFoundWhenUpdatingMissingHabitacionWithPut() throws Exception {
+		when(habitacionService.update(eq(99L), any(UpdateHabitacionRequest.class)))
+				.thenThrow(new HabitacionNotFoundException(99L));
+
+		mockMvc.perform(put("/api/habitaciones/99")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "202"
+								}
+								"""))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Habitacion no encontrada con id: 99"))
+				.andExpect(jsonPath("$.path").value("/api/habitaciones/99"));
+	}
+
+	@Test
 	void shouldRejectUpdateHabitacionWithInvalidOptionalFields() throws Exception {
 		mockMvc.perform(put("/api/habitaciones/1")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -217,6 +236,23 @@ class HabitacionControllerTest {
 								"""))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.estado").value("OCUPADA"));
+	}
+
+	@Test
+	void shouldReturnNotFoundWhenUpdatingMissingHabitacionWithPatch() throws Exception {
+		when(habitacionService.update(eq(99L), any(UpdateHabitacionRequest.class)))
+				.thenThrow(new HabitacionNotFoundException(99L));
+
+		mockMvc.perform(patch("/api/habitaciones/99")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "estado": "MANTENIMIENTO"
+								}
+								"""))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Habitacion no encontrada con id: 99"))
+				.andExpect(jsonPath("$.path").value("/api/habitaciones/99"));
 	}
 
 	@Test

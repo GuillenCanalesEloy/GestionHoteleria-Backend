@@ -2,7 +2,6 @@ package com.Grupo1.GestionHoteleria_Backend.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.CreateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
@@ -53,8 +53,15 @@ public class HabitacionController {
 	}
 
 	@PostMapping
-	public ResponseEntity<HabitacionResponse> create(@Valid @RequestBody CreateHabitacionRequest request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(habitacionService.create(request));
+	public ResponseEntity<HabitacionResponse> create(
+			@Valid @RequestBody CreateHabitacionRequest request,
+			UriComponentsBuilder uriBuilder
+	) {
+		HabitacionResponse response = habitacionService.create(request);
+
+		return ResponseEntity
+				.created(uriBuilder.path("/api/habitaciones/{id}").buildAndExpand(response.id()).toUri())
+				.body(response);
 	}
 
 	@PutMapping("/{id}")
