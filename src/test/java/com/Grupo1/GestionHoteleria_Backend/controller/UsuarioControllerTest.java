@@ -25,6 +25,8 @@ import com.Grupo1.GestionHoteleria_Backend.dto.CreateUsuarioRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateUsuarioRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.UsuarioResponse;
 import com.Grupo1.GestionHoteleria_Backend.entity.Rol;
+import com.Grupo1.GestionHoteleria_Backend.exception.GlobalExceptionHandler;
+import com.Grupo1.GestionHoteleria_Backend.exception.UsuarioNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.service.UsuarioService;
 
 class UsuarioControllerTest {
@@ -35,7 +37,9 @@ class UsuarioControllerTest {
 	@BeforeEach
 	void setUp() {
 		usuarioService = org.mockito.Mockito.mock(UsuarioService.class);
-		mockMvc = MockMvcBuilders.standaloneSetup(new UsuarioController(usuarioService)).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(new UsuarioController(usuarioService))
+				.setControllerAdvice(new GlobalExceptionHandler())
+				.build();
 	}
 
 	@Test
@@ -61,6 +65,19 @@ class UsuarioControllerTest {
 				.andExpect(jsonPath("$.email").value("cliente@correo.com"))
 				.andExpect(jsonPath("$.rol").value("CLIENTE"))
 				.andExpect(jsonPath("$.password").doesNotExist());
+	}
+
+	@Test
+	void shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
+		when(usuarioService.findById(99L)).thenThrow(new UsuarioNotFoundException(99L));
+
+		mockMvc.perform(get("/api/usuarios/99"))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.timestamp").exists())
+				.andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.error").value("Not Found"))
+				.andExpect(jsonPath("$.message").value("Usuario no encontrado con id: 99"))
+				.andExpect(jsonPath("$.path").value("/api/usuarios/99"));
 	}
 
 	@Test
@@ -126,6 +143,18 @@ class UsuarioControllerTest {
 				.andExpect(status().isNoContent());
 
 		verify(usuarioService).delete(1L);
+	}
+
+	@Test
+	void shouldReturnNotFoundWhenDeletingMissingUser() throws Exception {
+		org.mockito.Mockito.doThrow(new UsuarioNotFoundException(99L)).when(usuarioService).delete(99L);
+
+		mockMvc.perform(delete("/api/usuarios/99"))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.error").value("Not Found"))
+				.andExpect(jsonPath("$.message").value("Usuario no encontrado con id: 99"))
+				.andExpect(jsonPath("$.path").value("/api/usuarios/99"));
 	}
 
 	private UsuarioResponse buildResponse(Long id, String nombre, String email, Rol rol) {

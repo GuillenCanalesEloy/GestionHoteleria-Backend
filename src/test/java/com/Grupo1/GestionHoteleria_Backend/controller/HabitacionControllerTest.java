@@ -28,6 +28,7 @@ import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.exception.GlobalExceptionHandler;
+import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.service.HabitacionService;
 
 class HabitacionControllerTest {
@@ -84,6 +85,19 @@ class HabitacionControllerTest {
 				.andExpect(jsonPath("$.id").value(1))
 				.andExpect(jsonPath("$.numero").value("101"))
 				.andExpect(jsonPath("$.precioPorNoche").value(120.00));
+	}
+
+	@Test
+	void shouldReturnNotFoundWhenHabitacionDoesNotExist() throws Exception {
+		when(habitacionService.findById(99L)).thenThrow(new HabitacionNotFoundException(99L));
+
+		mockMvc.perform(get("/api/habitaciones/99"))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.timestamp").exists())
+				.andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.error").value("Not Found"))
+				.andExpect(jsonPath("$.message").value("Habitacion no encontrada con id: 99"))
+				.andExpect(jsonPath("$.path").value("/api/habitaciones/99"));
 	}
 
 	@Test
@@ -211,6 +225,18 @@ class HabitacionControllerTest {
 				.andExpect(status().isNoContent());
 
 		verify(habitacionService).delete(1L);
+	}
+
+	@Test
+	void shouldReturnNotFoundWhenDeletingMissingHabitacion() throws Exception {
+		org.mockito.Mockito.doThrow(new HabitacionNotFoundException(99L)).when(habitacionService).delete(99L);
+
+		mockMvc.perform(delete("/api/habitaciones/99"))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.error").value("Not Found"))
+				.andExpect(jsonPath("$.message").value("Habitacion no encontrada con id: 99"))
+				.andExpect(jsonPath("$.path").value("/api/habitaciones/99"));
 	}
 
 	@Test
