@@ -27,6 +27,7 @@ import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
+import com.Grupo1.GestionHoteleria_Backend.exception.GlobalExceptionHandler;
 import com.Grupo1.GestionHoteleria_Backend.service.HabitacionService;
 
 class HabitacionControllerTest {
@@ -37,7 +38,9 @@ class HabitacionControllerTest {
 	@BeforeEach
 	void setUp() {
 		habitacionService = org.mockito.Mockito.mock(HabitacionService.class);
-		mockMvc = MockMvcBuilders.standaloneSetup(new HabitacionController(habitacionService)).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(new HabitacionController(habitacionService))
+				.setControllerAdvice(new GlobalExceptionHandler())
+				.build();
 	}
 
 	@Test
@@ -107,6 +110,47 @@ class HabitacionControllerTest {
 	}
 
 	@Test
+	void shouldRejectCreateHabitacionWithInvalidFields() throws Exception {
+		mockMvc.perform(post("/api/habitaciones")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "   ",
+								  "piso": 0,
+								  "tipo": null,
+								  "capacidad": 0,
+								  "precioPorNoche": 0,
+								  "descripcion": "%s"
+								}
+								""".formatted("x".repeat(501))))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("Datos de entrada invalidos"))
+				.andExpect(jsonPath("$.validations.numero").value("El numero de habitacion es obligatorio"))
+				.andExpect(jsonPath("$.validations.piso").value("El piso debe ser mayor a cero"))
+				.andExpect(jsonPath("$.validations.tipo").value("El tipo de habitacion es obligatorio"))
+				.andExpect(jsonPath("$.validations.capacidad").value("La capacidad debe ser mayor a cero"))
+				.andExpect(jsonPath("$.validations.precioPorNoche").value("El precio por noche debe ser mayor a cero"))
+				.andExpect(jsonPath("$.validations.descripcion").value("La descripcion no debe superar 500 caracteres"));
+	}
+
+	@Test
+	void shouldRejectCreateHabitacionWithInvalidEnum() throws Exception {
+		mockMvc.perform(post("/api/habitaciones")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "201",
+								  "piso": 2,
+								  "tipo": "PRESIDENCIAL",
+								  "capacidad": 2,
+								  "precioPorNoche": 180.00
+								}
+								"""))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("El cuerpo de la peticion tiene datos invalidos"));
+	}
+
+	@Test
 	void shouldUpdateHabitacionWithPut() throws Exception {
 		when(habitacionService.update(eq(1L), any(UpdateHabitacionRequest.class)))
 				.thenReturn(buildResponse(1L, "202", TipoHabitacion.DOBLE, EstadoHabitacion.MANTENIMIENTO));
@@ -123,6 +167,26 @@ class HabitacionControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.numero").value("202"))
 				.andExpect(jsonPath("$.estado").value("MANTENIMIENTO"));
+	}
+
+	@Test
+	void shouldRejectUpdateHabitacionWithInvalidOptionalFields() throws Exception {
+		mockMvc.perform(put("/api/habitaciones/1")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "   ",
+								  "piso": -1,
+								  "capacidad": 0,
+								  "precioPorNoche": 0
+								}
+								"""))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("Datos de entrada invalidos"))
+				.andExpect(jsonPath("$.validations.numero").value("El numero de habitacion no puede estar vacio"))
+				.andExpect(jsonPath("$.validations.piso").value("El piso debe ser mayor a cero"))
+				.andExpect(jsonPath("$.validations.capacidad").value("La capacidad debe ser mayor a cero"))
+				.andExpect(jsonPath("$.validations.precioPorNoche").value("El precio por noche debe ser mayor a cero"));
 	}
 
 	@Test
@@ -147,6 +211,14 @@ class HabitacionControllerTest {
 				.andExpect(status().isNoContent());
 
 		verify(habitacionService).delete(1L);
+	}
+
+	@Test
+	void shouldRejectInvalidFilterEnum() throws Exception {
+		mockMvc.perform(get("/api/habitaciones").param("tipo", "PRESIDENCIAL"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("Parametros de entrada invalidos"))
+				.andExpect(jsonPath("$.validations.tipo").value("Valor invalido para el parametro tipo"));
 	}
 
 	private HabitacionResponse buildResponse(Long id, String numero, TipoHabitacion tipo, EstadoHabitacion estado) {

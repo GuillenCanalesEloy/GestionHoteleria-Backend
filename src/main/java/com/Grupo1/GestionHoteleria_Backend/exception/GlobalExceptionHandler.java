@@ -7,9 +7,11 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.ErrorResponse;
 
@@ -48,6 +50,19 @@ public class GlobalExceptionHandler {
 				.forEach(error -> validations.put(error.getField(), error.getDefaultMessage()));
 
 		return buildResponse(HttpStatus.BAD_REQUEST, "Datos de entrada invalidos", validations);
+	}
+
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ErrorResponse> handleMessageNotReadable() {
+		return buildResponse(HttpStatus.BAD_REQUEST, "El cuerpo de la peticion tiene datos invalidos", null);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleArgumentTypeMismatch(MethodArgumentTypeMismatchException exception) {
+		Map<String, String> validations = new HashMap<>();
+		validations.put(exception.getName(), "Valor invalido para el parametro " + exception.getName());
+
+		return buildResponse(HttpStatus.BAD_REQUEST, "Parametros de entrada invalidos", validations);
 	}
 
 	@ExceptionHandler(Exception.class)

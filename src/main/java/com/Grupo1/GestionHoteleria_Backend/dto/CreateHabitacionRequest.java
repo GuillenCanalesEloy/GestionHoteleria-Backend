@@ -17,6 +17,7 @@ public record CreateHabitacionRequest(
 		String numero,
 
 		@NotNull(message = "El piso es obligatorio")
+		@Positive(message = "El piso debe ser mayor a cero")
 		Integer piso,
 
 		@NotNull(message = "El tipo de habitacion es obligatorio")
