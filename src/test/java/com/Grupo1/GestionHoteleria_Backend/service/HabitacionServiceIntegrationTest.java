@@ -1,6 +1,7 @@
 package com.Grupo1.GestionHoteleria_Backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 
@@ -10,11 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.Grupo1.GestionHoteleria_Backend.dto.CreateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.PageResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.Habitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
+import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNotFoundException;
+import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNumeroAlreadyExistsException;
 import com.Grupo1.GestionHoteleria_Backend.repository.HabitacionRepository;
 
 @SpringBootTest
@@ -69,6 +74,123 @@ class HabitacionServiceIntegrationTest {
 		);
 
 		assertThat(response.content()).extracting(HabitacionResponse::numero).containsExactly("201", "502");
+	}
+
+	@Test
+	void shouldCreateHabitacionAndPersistDefaultEstado() {
+		CreateHabitacionRequest request = new CreateHabitacionRequest(
+				"601",
+				6,
+				TipoHabitacion.MATRIMONIAL,
+				null,
+				2,
+				new BigDecimal("220.00"),
+				"Habitacion matrimonial"
+		);
+
+		HabitacionResponse response = habitacionService.create(request);
+
+		assertThat(response.id()).isNotNull();
+		assertThat(response.numero()).isEqualTo("601");
+		assertThat(response.estado()).isEqualTo(EstadoHabitacion.DISPONIBLE);
+		assertThat(habitacionRepository.findByNumero("601")).isPresent()
+				.get()
+				.extracting(Habitacion::getPrecioPorNoche)
+				.isEqualTo(new BigDecimal("220.00"));
+	}
+
+	@Test
+	void shouldRejectDuplicatedNumeroOnCreate() {
+		CreateHabitacionRequest request = new CreateHabitacionRequest(
+				"101",
+				1,
+				TipoHabitacion.SIMPLE,
+				EstadoHabitacion.DISPONIBLE,
+				1,
+				new BigDecimal("90.00"),
+				null
+		);
+
+		assertThatThrownBy(() -> habitacionService.create(request))
+				.isInstanceOf(HabitacionNumeroAlreadyExistsException.class)
+				.hasMessage("Ya existe una habitacion con el numero: 101");
+	}
+
+	@Test
+	void shouldUpdateHabitacionAndPersistChanges() {
+		Habitacion habitacion = habitacionRepository.findByNumero("201").orElseThrow();
+		UpdateHabitacionRequest request = new UpdateHabitacionRequest(
+				"202",
+				2,
+				TipoHabitacion.FAMILIAR,
+				EstadoHabitacion.MANTENIMIENTO,
+				4,
+				new BigDecimal("320.00"),
+				"Habitacion familiar actualizada"
+		);
+
+		HabitacionResponse response = habitacionService.update(habitacion.getId(), request);
+
+		assertThat(response.numero()).isEqualTo("202");
+		assertThat(response.tipo()).isEqualTo(TipoHabitacion.FAMILIAR);
+		assertThat(response.estado()).isEqualTo(EstadoHabitacion.MANTENIMIENTO);
+		assertThat(response.capacidad()).isEqualTo(4);
+		assertThat(response.precioPorNoche()).isEqualByComparingTo("320.00");
+
+		Habitacion persisted = habitacionRepository.findById(habitacion.getId()).orElseThrow();
+		assertThat(persisted.getNumero()).isEqualTo("202");
+		assertThat(persisted.getDescripcion()).isEqualTo("Habitacion familiar actualizada");
+	}
+
+	@Test
+	void shouldPatchHabitacionAndKeepUnsentFields() {
+		Habitacion habitacion = habitacionRepository.findByNumero("101").orElseThrow();
+		UpdateHabitacionRequest request = new UpdateHabitacionRequest(
+				null,
+				null,
+				null,
+				EstadoHabitacion.OCUPADA,
+				null,
+				null,
+				null
+		);
+
+		HabitacionResponse response = habitacionService.update(habitacion.getId(), request);
+
+		assertThat(response.numero()).isEqualTo("101");
+		assertThat(response.tipo()).isEqualTo(TipoHabitacion.SIMPLE);
+		assertThat(response.estado()).isEqualTo(EstadoHabitacion.OCUPADA);
+		assertThat(response.precioPorNoche()).isEqualByComparingTo("80.00");
+	}
+
+	@Test
+	void shouldRejectDuplicatedNumeroOnUpdate() {
+		Habitacion habitacion = habitacionRepository.findByNumero("201").orElseThrow();
+		UpdateHabitacionRequest request = new UpdateHabitacionRequest(
+				"101",
+				null,
+				null,
+				null,
+				null,
+				null,
+				null
+		);
+
+		assertThatThrownBy(() -> habitacionService.update(habitacion.getId(), request))
+				.isInstanceOf(HabitacionNumeroAlreadyExistsException.class)
+				.hasMessage("Ya existe una habitacion con el numero: 101");
+	}
+
+	@Test
+	void shouldDeleteHabitacionAndRejectSecondDelete() {
+		Habitacion habitacion = habitacionRepository.findByNumero("502").orElseThrow();
+
+		habitacionService.delete(habitacion.getId());
+
+		assertThat(habitacionRepository.existsById(habitacion.getId())).isFalse();
+		assertThatThrownBy(() -> habitacionService.delete(habitacion.getId()))
+				.isInstanceOf(HabitacionNotFoundException.class)
+				.hasMessage("Habitacion no encontrada con id: " + habitacion.getId());
 	}
 
 	private Habitacion buildHabitacion(

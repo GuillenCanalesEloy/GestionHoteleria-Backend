@@ -32,6 +32,7 @@ import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.exception.GlobalExceptionHandler;
 import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNotFoundException;
+import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNumeroAlreadyExistsException;
 import com.Grupo1.GestionHoteleria_Backend.service.HabitacionService;
 
 class HabitacionControllerTest {
@@ -192,6 +193,29 @@ class HabitacionControllerTest {
 	}
 
 	@Test
+	void shouldReturnConflictWhenCreatingHabitacionWithDuplicatedNumero() throws Exception {
+		when(habitacionService.create(any(CreateHabitacionRequest.class)))
+				.thenThrow(new HabitacionNumeroAlreadyExistsException("201"));
+
+		mockMvc.perform(post("/api/habitaciones")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "201",
+								  "piso": 2,
+								  "tipo": "DOBLE",
+								  "capacidad": 2,
+								  "precioPorNoche": 180.00
+								}
+								"""))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.status").value(409))
+				.andExpect(jsonPath("$.error").value("Conflict"))
+				.andExpect(jsonPath("$.message").value("Ya existe una habitacion con el numero: 201"))
+				.andExpect(jsonPath("$.path").value("/api/habitaciones"));
+	}
+
+	@Test
 	void shouldRejectCreateHabitacionWithInvalidFields() throws Exception {
 		mockMvc.perform(post("/api/habitaciones")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -249,6 +273,24 @@ class HabitacionControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.numero").value("202"))
 				.andExpect(jsonPath("$.estado").value("MANTENIMIENTO"));
+	}
+
+	@Test
+	void shouldReturnConflictWhenUpdatingHabitacionWithDuplicatedNumero() throws Exception {
+		when(habitacionService.update(eq(1L), any(UpdateHabitacionRequest.class)))
+				.thenThrow(new HabitacionNumeroAlreadyExistsException("202"));
+
+		mockMvc.perform(put("/api/habitaciones/1")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "numero": "202"
+								}
+								"""))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.status").value(409))
+				.andExpect(jsonPath("$.message").value("Ya existe una habitacion con el numero: 202"))
+				.andExpect(jsonPath("$.path").value("/api/habitaciones/1"));
 	}
 
 	@Test
