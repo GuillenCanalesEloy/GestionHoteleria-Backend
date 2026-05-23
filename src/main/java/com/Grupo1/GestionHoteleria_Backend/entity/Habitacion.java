@@ -10,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -28,6 +29,12 @@ import lombok.Setter;
 @Entity
 @Table(
 		name = "habitaciones",
+		indexes = {
+				@Index(name = "idx_habitaciones_numero", columnList = "numero"),
+				@Index(name = "idx_habitaciones_estado", columnList = "estado"),
+				@Index(name = "idx_habitaciones_tipo", columnList = "tipo"),
+				@Index(name = "idx_habitaciones_estado_tipo", columnList = "estado,tipo")
+		},
 		uniqueConstraints = {
 				@UniqueConstraint(name = "uk_habitaciones_numero", columnNames = "numero")
 		}

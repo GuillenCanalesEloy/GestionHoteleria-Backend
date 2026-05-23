@@ -3,7 +3,12 @@ package com.Grupo1.GestionHoteleria_Backend.repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +18,14 @@ import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Reserva;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Long>, JpaSpecificationExecutor<Reserva> {
+
+	@Override
+	@EntityGraph(attributePaths = {"usuario", "habitacion"})
+	Page<Reserva> findAll(Specification<Reserva> specification, Pageable pageable);
+
+	@EntityGraph(attributePaths = {"usuario", "habitacion"})
+	@Query("select r from Reserva r where r.id = :id")
+	Optional<Reserva> findByIdWithUsuarioAndHabitacion(@Param("id") Long id);
 
 	List<Reserva> findByUsuarioId(Long usuarioId);
 

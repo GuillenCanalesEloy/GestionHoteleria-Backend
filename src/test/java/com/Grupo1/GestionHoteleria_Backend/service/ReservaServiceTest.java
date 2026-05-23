@@ -116,7 +116,7 @@ class ReservaServiceTest {
 
 	@Test
 	void shouldFindReservaById() {
-		when(reservaRepository.findById(1L)).thenReturn(Optional.of(buildReserva()));
+		when(reservaRepository.findByIdWithUsuarioAndHabitacion(1L)).thenReturn(Optional.of(buildReserva()));
 
 		ReservaResponse response = reservaService.findById(1L);
 
@@ -127,7 +127,7 @@ class ReservaServiceTest {
 
 	@Test
 	void shouldRejectFindWhenReservaDoesNotExist() {
-		when(reservaRepository.findById(99L)).thenReturn(Optional.empty());
+		when(reservaRepository.findByIdWithUsuarioAndHabitacion(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> reservaService.findById(99L))
 				.isInstanceOf(ReservaNotFoundException.class)
@@ -273,7 +273,7 @@ class ReservaServiceTest {
 				EstadoReserva.CONFIRMADA
 		);
 
-		when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+		when(reservaRepository.findByIdWithUsuarioAndHabitacion(1L)).thenReturn(Optional.of(reserva));
 		when(habitacionRepository.findByIdForUpdate(11L)).thenReturn(Optional.of(nuevaHabitacion));
 		when(reservaRepository.existsActiveOverlapExcludingReserva(
 				11L,
@@ -305,7 +305,7 @@ class ReservaServiceTest {
 				null
 		);
 
-		when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+		when(reservaRepository.findByIdWithUsuarioAndHabitacion(1L)).thenReturn(Optional.of(reserva));
 		when(habitacionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(buildHabitacion()));
 		when(reservaRepository.existsActiveOverlapExcludingReserva(
 				10L,

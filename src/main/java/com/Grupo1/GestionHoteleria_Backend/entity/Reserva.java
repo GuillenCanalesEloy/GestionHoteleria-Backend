@@ -36,7 +36,11 @@ import lombok.Setter;
 				@Index(name = "idx_reservas_habitacion_id", columnList = "habitacion_id"),
 				@Index(name = "idx_reservas_usuario_id", columnList = "usuario_id"),
 				@Index(name = "idx_reservas_fecha_entrada", columnList = "fecha_entrada"),
-				@Index(name = "idx_reservas_fecha_salida", columnList = "fecha_salida")
+				@Index(name = "idx_reservas_fecha_salida", columnList = "fecha_salida"),
+				@Index(name = "idx_reservas_estado", columnList = "estado"),
+				@Index(name = "idx_reservas_habitacion_estado_fechas", columnList = "habitacion_id,estado,fecha_entrada,fecha_salida"),
+				@Index(name = "idx_reservas_usuario_fecha_entrada", columnList = "usuario_id,fecha_entrada"),
+				@Index(name = "idx_reservas_estado_fecha_entrada", columnList = "estado,fecha_entrada")
 		}
 )
 public class Reserva {

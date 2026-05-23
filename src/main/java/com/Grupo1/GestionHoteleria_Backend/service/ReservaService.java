@@ -157,7 +157,7 @@ public class ReservaService {
 	}
 
 	private Reserva findReservaById(Long id) {
-		return reservaRepository.findById(id)
+		return reservaRepository.findByIdWithUsuarioAndHabitacion(id)
 				.orElseThrow(() -> new ReservaNotFoundException(id));
 	}
 
