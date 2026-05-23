@@ -19,6 +19,7 @@ import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Habitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.Reserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Usuario;
+import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNoDisponibleException;
 import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.exception.ReservaNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.exception.UsuarioNotFoundException;
@@ -84,6 +85,7 @@ public class ReservaService {
 		Habitacion habitacion = findHabitacionById(request.habitacionId());
 
 		validateReservationData(request.fechaEntrada(), request.fechaSalida(), request.cantidadHuespedes(), habitacion);
+		validateHabitacionDisponible(habitacion.getId(), request.fechaEntrada(), request.fechaSalida(), null);
 
 		Reserva reserva = Reserva.builder()
 				.usuario(usuario)
@@ -126,6 +128,12 @@ public class ReservaService {
 				reserva.getFechaSalida(),
 				reserva.getCantidadHuespedes(),
 				reserva.getHabitacion()
+		);
+		validateHabitacionDisponible(
+				reserva.getHabitacion().getId(),
+				reserva.getFechaEntrada(),
+				reserva.getFechaSalida(),
+				reserva.getId()
 		);
 		reserva.setPrecioTotal(calculatePrecioTotal(
 				reserva.getFechaEntrada(),
@@ -174,6 +182,26 @@ public class ReservaService {
 		}
 		if (cantidadHuespedes > habitacion.getCapacidad()) {
 			throw new IllegalArgumentException("La cantidad de huespedes no puede superar la capacidad de la habitacion");
+		}
+	}
+
+	private void validateHabitacionDisponible(
+			Long habitacionId,
+			LocalDate fechaEntrada,
+			LocalDate fechaSalida,
+			Long reservaIdToExclude
+	) {
+		boolean hasOverlap = reservaIdToExclude == null
+				? reservaRepository.existsActiveOverlap(habitacionId, fechaEntrada, fechaSalida)
+				: reservaRepository.existsActiveOverlapExcludingReserva(
+						habitacionId,
+						reservaIdToExclude,
+						fechaEntrada,
+						fechaSalida
+				);
+
+		if (hasOverlap) {
+			throw new HabitacionNoDisponibleException(habitacionId, fechaEntrada, fechaSalida);
 		}
 	}
 

@@ -36,6 +36,14 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request, null);
 	}
 
+	@ExceptionHandler(HabitacionNoDisponibleException.class)
+	public ResponseEntity<ErrorResponse> handleHabitacionNoDisponible(
+			HabitacionNoDisponibleException exception,
+			HttpServletRequest request
+	) {
+		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request, null);
+	}
+
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleResourceNotFound(
 			ResourceNotFoundException exception,

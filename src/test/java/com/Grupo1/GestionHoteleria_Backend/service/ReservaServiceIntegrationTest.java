@@ -1,6 +1,7 @@
 package com.Grupo1.GestionHoteleria_Backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,9 +18,11 @@ import com.Grupo1.GestionHoteleria_Backend.dto.ReservaResponse;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Habitacion;
+import com.Grupo1.GestionHoteleria_Backend.entity.Reserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Rol;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.Usuario;
+import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNoDisponibleException;
 import com.Grupo1.GestionHoteleria_Backend.repository.HabitacionRepository;
 import com.Grupo1.GestionHoteleria_Backend.repository.ReservaRepository;
 import com.Grupo1.GestionHoteleria_Backend.repository.UsuarioRepository;
@@ -109,5 +112,51 @@ class ReservaServiceIntegrationTest {
 		);
 
 		assertThat(response.content()).extracting(ReservaResponse::id).containsExactly(created.id());
+	}
+
+	@Test
+	void shouldRejectReservaWhenHabitacionHasActiveOverlap() {
+		reservaService.create(new CreateReservaRequest(
+				usuario.getId(),
+				habitacion.getId(),
+				LocalDate.of(2026, 10, 10),
+				LocalDate.of(2026, 10, 15),
+				1
+		));
+
+		assertThatThrownBy(() -> reservaService.create(new CreateReservaRequest(
+				usuario.getId(),
+				habitacion.getId(),
+				LocalDate.of(2026, 10, 12),
+				LocalDate.of(2026, 10, 16),
+				1
+		)))
+				.isInstanceOf(HabitacionNoDisponibleException.class)
+				.hasMessage("La habitacion " + habitacion.getId()
+						+ " no esta disponible entre 2026-10-12 y 2026-10-16");
+	}
+
+	@Test
+	void shouldAllowReservaWhenPreviousOverlapIsCancelled() {
+		reservaRepository.save(Reserva.builder()
+				.usuario(usuario)
+				.habitacion(habitacion)
+				.fechaEntrada(LocalDate.of(2026, 11, 10))
+				.fechaSalida(LocalDate.of(2026, 11, 15))
+				.cantidadHuespedes(1)
+				.precioTotal(new BigDecimal("750.00"))
+				.estado(EstadoReserva.CANCELADA)
+				.build());
+
+		ReservaResponse response = reservaService.create(new CreateReservaRequest(
+				usuario.getId(),
+				habitacion.getId(),
+				LocalDate.of(2026, 11, 12),
+				LocalDate.of(2026, 11, 14),
+				1
+		));
+
+		assertThat(response.id()).isNotNull();
+		assertThat(response.precioTotal()).isEqualByComparingTo("300.00");
 	}
 }

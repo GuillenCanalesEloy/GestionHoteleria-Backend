@@ -31,6 +31,7 @@ import com.Grupo1.GestionHoteleria_Backend.dto.UpdateReservaRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.exception.GlobalExceptionHandler;
+import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNoDisponibleException;
 import com.Grupo1.GestionHoteleria_Backend.exception.ReservaNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.service.ReservaService;
 
@@ -151,6 +152,33 @@ class ReservaControllerTest {
 				.andExpect(header().string("Location", "http://localhost/api/reservas/10"))
 				.andExpect(jsonPath("$.id").value(10))
 				.andExpect(jsonPath("$.estado").value("PENDIENTE"));
+	}
+
+	@Test
+	void shouldReturnConflictWhenHabitacionIsNotAvailable() throws Exception {
+		when(reservaService.create(any(CreateReservaRequest.class)))
+				.thenThrow(new HabitacionNoDisponibleException(
+						20L,
+						LocalDate.of(2026, 8, 10),
+						LocalDate.of(2026, 8, 12)
+				));
+
+		mockMvc.perform(post("/api/reservas")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "usuarioId": 10,
+								  "habitacionId": 20,
+								  "fechaEntrada": "2026-08-10",
+								  "fechaSalida": "2026-08-12",
+								  "cantidadHuespedes": 2
+								}
+								"""))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.status").value(409))
+				.andExpect(jsonPath("$.error").value("Conflict"))
+				.andExpect(jsonPath("$.message").value("La habitacion 20 no esta disponible entre 2026-08-10 y 2026-08-12"))
+				.andExpect(jsonPath("$.path").value("/api/reservas"));
 	}
 
 	@Test

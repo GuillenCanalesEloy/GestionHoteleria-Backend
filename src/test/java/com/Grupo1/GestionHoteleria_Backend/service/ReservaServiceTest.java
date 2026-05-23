@@ -30,6 +30,7 @@ import com.Grupo1.GestionHoteleria_Backend.entity.Reserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Rol;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.Usuario;
+import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNoDisponibleException;
 import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.exception.ReservaNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.exception.UsuarioNotFoundException;
@@ -144,6 +145,7 @@ class ReservaServiceTest {
 		);
 		when(usuarioRepository.findById(1L)).thenReturn(Optional.of(buildUsuario()));
 		when(habitacionRepository.findById(10L)).thenReturn(Optional.of(buildHabitacion()));
+		when(reservaRepository.existsActiveOverlap(10L, request.fechaEntrada(), request.fechaSalida())).thenReturn(false);
 		when(reservaRepository.save(any(Reserva.class))).thenAnswer(invocation -> {
 			Reserva reserva = invocation.getArgument(0);
 			reserva.setId(20L);
@@ -159,6 +161,26 @@ class ReservaServiceTest {
 		assertThat(reservaCaptor.getValue().getPrecioTotal()).isEqualByComparingTo("360.00");
 		assertThat(response.id()).isEqualTo(20L);
 		assertThat(response.precioTotal()).isEqualByComparingTo("360.00");
+	}
+
+	@Test
+	void shouldRejectCreateWhenHabitacionIsNotAvailableForDateRange() {
+		CreateReservaRequest request = new CreateReservaRequest(
+				1L,
+				10L,
+				LocalDate.of(2026, 6, 10),
+				LocalDate.of(2026, 6, 13),
+				2
+		);
+		when(usuarioRepository.findById(1L)).thenReturn(Optional.of(buildUsuario()));
+		when(habitacionRepository.findById(10L)).thenReturn(Optional.of(buildHabitacion()));
+		when(reservaRepository.existsActiveOverlap(10L, request.fechaEntrada(), request.fechaSalida())).thenReturn(true);
+
+		assertThatThrownBy(() -> reservaService.create(request))
+				.isInstanceOf(HabitacionNoDisponibleException.class)
+				.hasMessage("La habitacion 10 no esta disponible entre 2026-06-10 y 2026-06-13");
+
+		verify(reservaRepository, never()).save(any(Reserva.class));
 	}
 
 	@Test
@@ -253,6 +275,12 @@ class ReservaServiceTest {
 
 		when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
 		when(habitacionRepository.findById(11L)).thenReturn(Optional.of(nuevaHabitacion));
+		when(reservaRepository.existsActiveOverlapExcludingReserva(
+				11L,
+				1L,
+				request.fechaEntrada(),
+				request.fechaSalida()
+		)).thenReturn(false);
 		when(reservaRepository.save(reserva)).thenReturn(reserva);
 
 		ReservaResponse response = reservaService.update(1L, request);
@@ -263,6 +291,33 @@ class ReservaServiceTest {
 		assertThat(response.cantidadHuespedes()).isEqualTo(4);
 		assertThat(response.estado()).isEqualTo(EstadoReserva.CONFIRMADA);
 		assertThat(response.precioTotal()).isEqualByComparingTo("600.00");
+	}
+
+	@Test
+	void shouldRejectUpdateWhenHabitacionIsNotAvailableForDateRange() {
+		Reserva reserva = buildReserva();
+		UpdateReservaRequest request = new UpdateReservaRequest(
+				null,
+				null,
+				LocalDate.of(2026, 7, 1),
+				LocalDate.of(2026, 7, 4),
+				null,
+				null
+		);
+
+		when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+		when(reservaRepository.existsActiveOverlapExcludingReserva(
+				10L,
+				1L,
+				request.fechaEntrada(),
+				request.fechaSalida()
+		)).thenReturn(true);
+
+		assertThatThrownBy(() -> reservaService.update(1L, request))
+				.isInstanceOf(HabitacionNoDisponibleException.class)
+				.hasMessage("La habitacion 10 no esta disponible entre 2026-07-01 y 2026-07-04");
+
+		verify(reservaRepository, never()).save(any(Reserva.class));
 	}
 
 	@Test
