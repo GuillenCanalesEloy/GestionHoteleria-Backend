@@ -1,6 +1,7 @@
 package com.Grupo1.GestionHoteleria_Backend.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,9 @@ import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.PageResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
+import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Habitacion;
+import com.Grupo1.GestionHoteleria_Backend.entity.Reserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNumeroAlreadyExistsException;
@@ -47,17 +50,42 @@ public class HabitacionService {
 			Integer capacidadMin,
 			BigDecimal precioMin,
 			BigDecimal precioMax,
+			LocalDate fechaEntrada,
+			LocalDate fechaSalida,
 			int page,
 			int size,
 			String sortBy,
 			String direction
 	) {
-		validateFilters(capacidadMin, precioMin, precioMax);
+		validateFilters(capacidadMin, precioMin, precioMax, fechaEntrada, fechaSalida);
 		PageRequest pageable = buildPageRequest(page, size, sortBy, direction);
-		Specification<Habitacion> specification = buildSpecification(tipo, estado, capacidadMin, precioMin, precioMax);
+		Specification<Habitacion> specification = buildSpecification(
+				tipo,
+				estado,
+				capacidadMin,
+				precioMin,
+				precioMax,
+				fechaEntrada,
+				fechaSalida
+		);
 
 		return PageResponse.fromPage(habitacionRepository.findAll(specification, pageable)
 				.map(HabitacionResponse::fromEntity));
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponse<HabitacionResponse> findAll(
+			TipoHabitacion tipo,
+			EstadoHabitacion estado,
+			Integer capacidadMin,
+			BigDecimal precioMin,
+			BigDecimal precioMax,
+			int page,
+			int size,
+			String sortBy,
+			String direction
+	) {
+		return findAll(tipo, estado, capacidadMin, precioMin, precioMax, null, null, page, size, sortBy, direction);
 	}
 
 	@Transactional(readOnly = true)
@@ -174,7 +202,13 @@ public class HabitacionService {
 		}
 	}
 
-	private void validateFilters(Integer capacidadMin, BigDecimal precioMin, BigDecimal precioMax) {
+	private void validateFilters(
+			Integer capacidadMin,
+			BigDecimal precioMin,
+			BigDecimal precioMax,
+			LocalDate fechaEntrada,
+			LocalDate fechaSalida
+	) {
 		if (capacidadMin != null && capacidadMin < 1) {
 			throw new IllegalArgumentException("La capacidad minima debe ser mayor a cero");
 		}
@@ -187,6 +221,12 @@ public class HabitacionService {
 		if (precioMin != null && precioMax != null && precioMin.compareTo(precioMax) > 0) {
 			throw new IllegalArgumentException("El precio minimo no puede ser mayor al precio maximo");
 		}
+		if ((fechaEntrada == null) != (fechaSalida == null)) {
+			throw new IllegalArgumentException("Debe enviar fechaEntrada y fechaSalida para filtrar disponibilidad");
+		}
+		if (fechaEntrada != null && !fechaSalida.isAfter(fechaEntrada)) {
+			throw new IllegalArgumentException("La fecha de salida debe ser posterior a la fecha de entrada");
+		}
 	}
 
 	private Specification<Habitacion> buildSpecification(
@@ -194,14 +234,17 @@ public class HabitacionService {
 			EstadoHabitacion estado,
 			Integer capacidadMin,
 			BigDecimal precioMin,
-			BigDecimal precioMax
+			BigDecimal precioMax,
+			LocalDate fechaEntrada,
+			LocalDate fechaSalida
 	) {
 		return Specification
 				.where(hasTipo(tipo))
 				.and(hasEstado(estado))
 				.and(hasCapacidadMin(capacidadMin))
 				.and(hasPrecioMin(precioMin))
-				.and(hasPrecioMax(precioMax));
+				.and(hasPrecioMax(precioMax))
+				.and(isAvailableBetween(fechaEntrada, fechaSalida));
 	}
 
 	private Specification<Habitacion> hasTipo(TipoHabitacion tipo) {
@@ -227,5 +270,25 @@ public class HabitacionService {
 	private Specification<Habitacion> hasPrecioMax(BigDecimal precioMax) {
 		return (root, query, criteriaBuilder) ->
 				precioMax == null ? null : criteriaBuilder.lessThanOrEqualTo(root.get("precioPorNoche"), precioMax);
+	}
+
+	private Specification<Habitacion> isAvailableBetween(LocalDate fechaEntrada, LocalDate fechaSalida) {
+		return (root, query, criteriaBuilder) -> {
+			if (fechaEntrada == null || fechaSalida == null) {
+				return null;
+			}
+
+			var overlappingReserva = query.subquery(Long.class);
+			var reserva = overlappingReserva.from(Reserva.class);
+			overlappingReserva.select(reserva.get("id"))
+					.where(
+							criteriaBuilder.equal(reserva.get("habitacion").get("id"), root.get("id")),
+							criteriaBuilder.notEqual(reserva.get("estado"), EstadoReserva.CANCELADA),
+							criteriaBuilder.lessThan(reserva.get("fechaEntrada"), fechaSalida),
+							criteriaBuilder.greaterThan(reserva.get("fechaSalida"), fechaEntrada)
+					);
+
+			return criteriaBuilder.not(criteriaBuilder.exists(overlappingReserva));
+		};
 	}
 }

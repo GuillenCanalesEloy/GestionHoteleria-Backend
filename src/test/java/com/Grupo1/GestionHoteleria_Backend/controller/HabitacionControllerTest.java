@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,7 +51,7 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldListHabitaciones() throws Exception {
-		when(habitacionService.findAll(null, null, null, null, null, 0, 10, "id", "ASC"))
+		when(habitacionService.findAll(null, null, null, null, null, null, null, 0, 10, "id", "ASC"))
 				.thenReturn(buildPageResponse(List.of(buildResponse(1L, "101", TipoHabitacion.SIMPLE, EstadoHabitacion.DISPONIBLE)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones"))
@@ -67,7 +68,7 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldFilterHabitacionesByTipo() throws Exception {
-		when(habitacionService.findAll(TipoHabitacion.SUITE, null, null, null, null, 0, 10, "id", "ASC"))
+		when(habitacionService.findAll(TipoHabitacion.SUITE, null, null, null, null, null, null, 0, 10, "id", "ASC"))
 				.thenReturn(buildPageResponse(List.of(buildResponse(2L, "501", TipoHabitacion.SUITE, EstadoHabitacion.DISPONIBLE)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones").param("tipo", "SUITE"))
@@ -77,7 +78,7 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldFilterHabitacionesByEstado() throws Exception {
-		when(habitacionService.findAll(null, EstadoHabitacion.MANTENIMIENTO, null, null, null, 0, 10, "id", "ASC"))
+		when(habitacionService.findAll(null, EstadoHabitacion.MANTENIMIENTO, null, null, null, null, null, 0, 10, "id", "ASC"))
 				.thenReturn(buildPageResponse(List.of(buildResponse(3L, "301", TipoHabitacion.DOBLE, EstadoHabitacion.MANTENIMIENTO)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones").param("estado", "MANTENIMIENTO"))
@@ -87,7 +88,7 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldListHabitacionesWithPaginationAndSorting() throws Exception {
-		when(habitacionService.findAll(null, null, null, null, null, 1, 5, "precioPorNoche", "DESC"))
+		when(habitacionService.findAll(null, null, null, null, null, null, null, 1, 5, "precioPorNoche", "DESC"))
 				.thenReturn(buildPageResponse(List.of(buildResponse(4L, "401", TipoHabitacion.SUITE, EstadoHabitacion.DISPONIBLE)), 1, 5, 12));
 
 		mockMvc.perform(get("/api/habitaciones")
@@ -113,6 +114,8 @@ class HabitacionControllerTest {
 				2,
 				new BigDecimal("100.00"),
 				new BigDecimal("300.00"),
+				null,
+				null,
 				0,
 				10,
 				"precioPorNoche",
@@ -134,8 +137,36 @@ class HabitacionControllerTest {
 	}
 
 	@Test
+	void shouldFilterHabitacionesByAvailabilityRange() throws Exception {
+		LocalDate fechaEntrada = LocalDate.of(2026, 8, 10);
+		LocalDate fechaSalida = LocalDate.of(2026, 8, 12);
+		when(habitacionService.findAll(
+				null,
+				EstadoHabitacion.DISPONIBLE,
+				null,
+				null,
+				null,
+				fechaEntrada,
+				fechaSalida,
+				0,
+				10,
+				"numero",
+				"ASC"
+		)).thenReturn(buildPageResponse(List.of(buildResponse(6L, "203", TipoHabitacion.DOBLE, EstadoHabitacion.DISPONIBLE)), 0, 10, 1));
+
+		mockMvc.perform(get("/api/habitaciones")
+						.param("estado", "DISPONIBLE")
+						.param("fechaEntrada", "2026-08-10")
+						.param("fechaSalida", "2026-08-12")
+						.param("sortBy", "numero")
+						.param("direction", "ASC"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content[0].numero").value("203"));
+	}
+
+	@Test
 	void shouldRejectInvalidPaginationParameters() throws Exception {
-		when(habitacionService.findAll(isNull(), isNull(), isNull(), isNull(), isNull(), eq(-1), eq(10), eq("id"), eq("ASC")))
+		when(habitacionService.findAll(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), eq(-1), eq(10), eq("id"), eq("ASC")))
 				.thenThrow(new IllegalArgumentException("El numero de pagina no puede ser negativo"));
 
 		mockMvc.perform(get("/api/habitaciones").param("page", "-1"))

@@ -1,8 +1,10 @@
 package com.Grupo1.GestionHoteleria_Backend.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,6 +42,8 @@ public class HabitacionController {
 			@RequestParam(required = false) Integer capacidadMin,
 			@RequestParam(required = false) BigDecimal precioMin,
 			@RequestParam(required = false) BigDecimal precioMax,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaEntrada,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaSalida,
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "id") String sortBy,
@@ -51,6 +55,8 @@ public class HabitacionController {
 				capacidadMin,
 				precioMin,
 				precioMax,
+				fechaEntrada,
+				fechaSalida,
 				page,
 				size,
 				sortBy,

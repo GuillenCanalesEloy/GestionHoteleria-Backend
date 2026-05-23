@@ -330,4 +330,45 @@ class SecurityAuthorizationTest {
 		mockMvc.perform(delete("/api/reservas/999"))
 				.andExpect(status().isNotFound());
 	}
+
+	@Test
+	void shouldRejectAnonymousWhenAccessingDashboard() throws Exception {
+		mockMvc.perform(get("/api/dashboard/resumen"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	@WithMockUser(roles = "CLIENTE")
+	void shouldRejectClienteWhenAccessingDashboard() throws Exception {
+		mockMvc.perform(get("/api/dashboard/resumen"))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenAccessingDashboardResumen() throws Exception {
+		mockMvc.perform(get("/api/dashboard/resumen"))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenAccessingDashboardReservas() throws Exception {
+		mockMvc.perform(get("/api/dashboard/reservas"))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenAccessingDashboardOcupacion() throws Exception {
+		mockMvc.perform(get("/api/dashboard/ocupacion"))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenAccessingDashboardIngresos() throws Exception {
+		mockMvc.perform(get("/api/dashboard/ingresos"))
+				.andExpect(status().isOk());
+	}
 }

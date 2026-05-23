@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -163,6 +164,41 @@ class HabitacionServiceTest {
 		assertThatThrownBy(() -> habitacionService.findAll(null, null, null, new BigDecimal("300.00"), new BigDecimal("100.00"), 0, 10, "id", "ASC"))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage("El precio minimo no puede ser mayor al precio maximo");
+	}
+
+	@Test
+	void shouldRejectInvalidAvailabilityDateFilters() {
+		assertThatThrownBy(() -> habitacionService.findAll(
+				null,
+				null,
+				null,
+				null,
+				null,
+				LocalDate.of(2026, 8, 10),
+				null,
+				0,
+				10,
+				"id",
+				"ASC"
+		))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("Debe enviar fechaEntrada y fechaSalida para filtrar disponibilidad");
+
+		assertThatThrownBy(() -> habitacionService.findAll(
+				null,
+				null,
+				null,
+				null,
+				null,
+				LocalDate.of(2026, 8, 10),
+				LocalDate.of(2026, 8, 10),
+				0,
+				10,
+				"id",
+				"ASC"
+		))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("La fecha de salida debe ser posterior a la fecha de entrada");
 	}
 
 	@Test

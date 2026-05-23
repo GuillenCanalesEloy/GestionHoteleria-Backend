@@ -29,6 +29,8 @@ public interface HabitacionRepository extends JpaRepository<Habitacion, Long>, J
 
 	boolean existsByNumeroAndIdNot(String numero, Long id);
 
+	long countByEstado(EstadoHabitacion estado);
+
 	List<Habitacion> findByTipo(TipoHabitacion tipo);
 
 	List<Habitacion> findByEstado(EstadoHabitacion estado);
