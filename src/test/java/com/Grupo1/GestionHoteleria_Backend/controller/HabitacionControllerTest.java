@@ -49,7 +49,7 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldListHabitaciones() throws Exception {
-		when(habitacionService.findAll(null, null, 0, 10, "id", "ASC"))
+		when(habitacionService.findAll(null, null, null, null, null, 0, 10, "id", "ASC"))
 				.thenReturn(buildPageResponse(List.of(buildResponse(1L, "101", TipoHabitacion.SIMPLE, EstadoHabitacion.DISPONIBLE)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones"))
@@ -66,7 +66,7 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldFilterHabitacionesByTipo() throws Exception {
-		when(habitacionService.findAll(TipoHabitacion.SUITE, null, 0, 10, "id", "ASC"))
+		when(habitacionService.findAll(TipoHabitacion.SUITE, null, null, null, null, 0, 10, "id", "ASC"))
 				.thenReturn(buildPageResponse(List.of(buildResponse(2L, "501", TipoHabitacion.SUITE, EstadoHabitacion.DISPONIBLE)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones").param("tipo", "SUITE"))
@@ -76,7 +76,7 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldFilterHabitacionesByEstado() throws Exception {
-		when(habitacionService.findAll(null, EstadoHabitacion.MANTENIMIENTO, 0, 10, "id", "ASC"))
+		when(habitacionService.findAll(null, EstadoHabitacion.MANTENIMIENTO, null, null, null, 0, 10, "id", "ASC"))
 				.thenReturn(buildPageResponse(List.of(buildResponse(3L, "301", TipoHabitacion.DOBLE, EstadoHabitacion.MANTENIMIENTO)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones").param("estado", "MANTENIMIENTO"))
@@ -86,7 +86,7 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldListHabitacionesWithPaginationAndSorting() throws Exception {
-		when(habitacionService.findAll(null, null, 1, 5, "precioPorNoche", "DESC"))
+		when(habitacionService.findAll(null, null, null, null, null, 1, 5, "precioPorNoche", "DESC"))
 				.thenReturn(buildPageResponse(List.of(buildResponse(4L, "401", TipoHabitacion.SUITE, EstadoHabitacion.DISPONIBLE)), 1, 5, 12));
 
 		mockMvc.perform(get("/api/habitaciones")
@@ -105,8 +105,36 @@ class HabitacionControllerTest {
 	}
 
 	@Test
+	void shouldFilterHabitacionesWithSimpleFilters() throws Exception {
+		when(habitacionService.findAll(
+				TipoHabitacion.SUITE,
+				EstadoHabitacion.DISPONIBLE,
+				2,
+				new BigDecimal("100.00"),
+				new BigDecimal("300.00"),
+				0,
+				10,
+				"precioPorNoche",
+				"ASC"
+		)).thenReturn(buildPageResponse(List.of(buildResponse(5L, "502", TipoHabitacion.SUITE, EstadoHabitacion.DISPONIBLE)), 0, 10, 1));
+
+		mockMvc.perform(get("/api/habitaciones")
+						.param("tipo", "SUITE")
+						.param("estado", "DISPONIBLE")
+						.param("capacidadMin", "2")
+						.param("precioMin", "100.00")
+						.param("precioMax", "300.00")
+						.param("sortBy", "precioPorNoche")
+						.param("direction", "ASC"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content[0].id").value(5))
+				.andExpect(jsonPath("$.content[0].tipo").value("SUITE"))
+				.andExpect(jsonPath("$.content[0].estado").value("DISPONIBLE"));
+	}
+
+	@Test
 	void shouldRejectInvalidPaginationParameters() throws Exception {
-		when(habitacionService.findAll(isNull(), isNull(), eq(-1), eq(10), eq("id"), eq("ASC")))
+		when(habitacionService.findAll(isNull(), isNull(), isNull(), isNull(), isNull(), eq(-1), eq(10), eq("id"), eq("ASC")))
 				.thenThrow(new IllegalArgumentException("El numero de pagina no puede ser negativo"));
 
 		mockMvc.perform(get("/api/habitaciones").param("page", "-1"))

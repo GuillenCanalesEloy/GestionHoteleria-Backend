@@ -6,12 +6,13 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.Habitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 
-public interface HabitacionRepository extends JpaRepository<Habitacion, Long> {
+public interface HabitacionRepository extends JpaRepository<Habitacion, Long>, JpaSpecificationExecutor<Habitacion> {
 
 	Optional<Habitacion> findByNumero(String numero);
 

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.CreateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
@@ -53,13 +54,13 @@ class HabitacionServiceTest {
 
 	@Test
 	void shouldListHabitacionesWithPaginationAndSorting() {
-		when(habitacionRepository.findAll(any(Pageable.class)))
+		when(habitacionRepository.findAll(anySpecification(), any(Pageable.class)))
 				.thenReturn(new PageImpl<>(List.of(buildHabitacion(1L, "101", EstadoHabitacion.DISPONIBLE))));
 
-		PageResponse<HabitacionResponse> response = habitacionService.findAll(null, null, 0, 10, "numero", "DESC");
+		PageResponse<HabitacionResponse> response = habitacionService.findAll(null, null, null, null, null, 0, 10, "numero", "DESC");
 
 		ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-		verify(habitacionRepository).findAll(pageableCaptor.capture());
+		verify(habitacionRepository).findAll(anySpecification(), pageableCaptor.capture());
 
 		Pageable pageable = pageableCaptor.getValue();
 		assertThat(pageable.getPageNumber()).isEqualTo(0);
@@ -71,13 +72,13 @@ class HabitacionServiceTest {
 
 	@Test
 	void shouldFilterHabitacionesByTipoWithPagination() {
-		when(habitacionRepository.findByTipo(eq(TipoHabitacion.SUITE), any(Pageable.class)))
+		when(habitacionRepository.findAll(anySpecification(), any(Pageable.class)))
 				.thenReturn(new PageImpl<>(List.of(buildHabitacion(2L, "501", EstadoHabitacion.DISPONIBLE))));
 
-		PageResponse<HabitacionResponse> response = habitacionService.findAll(TipoHabitacion.SUITE, null, 1, 5, "precioPorNoche", "ASC");
+		PageResponse<HabitacionResponse> response = habitacionService.findAll(TipoHabitacion.SUITE, null, null, null, null, 1, 5, "precioPorNoche", "ASC");
 
 		ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-		verify(habitacionRepository).findByTipo(eq(TipoHabitacion.SUITE), pageableCaptor.capture());
+		verify(habitacionRepository).findAll(anySpecification(), pageableCaptor.capture());
 
 		Pageable pageable = pageableCaptor.getValue();
 		assertThat(pageable.getPageNumber()).isEqualTo(1);
@@ -88,13 +89,13 @@ class HabitacionServiceTest {
 
 	@Test
 	void shouldFilterHabitacionesByEstadoWithPagination() {
-		when(habitacionRepository.findByEstado(eq(EstadoHabitacion.MANTENIMIENTO), any(Pageable.class)))
+		when(habitacionRepository.findAll(anySpecification(), any(Pageable.class)))
 				.thenReturn(new PageImpl<>(List.of(buildHabitacion(3L, "301", EstadoHabitacion.MANTENIMIENTO))));
 
-		PageResponse<HabitacionResponse> response = habitacionService.findAll(null, EstadoHabitacion.MANTENIMIENTO, 0, 20, "estado", "DESC");
+		PageResponse<HabitacionResponse> response = habitacionService.findAll(null, EstadoHabitacion.MANTENIMIENTO, null, null, null, 0, 20, "estado", "DESC");
 
 		ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-		verify(habitacionRepository).findByEstado(eq(EstadoHabitacion.MANTENIMIENTO), pageableCaptor.capture());
+		verify(habitacionRepository).findAll(anySpecification(), pageableCaptor.capture());
 
 		Pageable pageable = pageableCaptor.getValue();
 		assertThat(pageable.getPageSize()).isEqualTo(20);
@@ -104,21 +105,64 @@ class HabitacionServiceTest {
 
 	@Test
 	void shouldRejectInvalidPaginationAndSorting() {
-		assertThatThrownBy(() -> habitacionService.findAll(null, null, -1, 10, "id", "ASC"))
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, null, null, null, -1, 10, "id", "ASC"))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage("El numero de pagina no puede ser negativo");
 
-		assertThatThrownBy(() -> habitacionService.findAll(null, null, 0, 101, "id", "ASC"))
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, null, null, null, 0, 101, "id", "ASC"))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage("El tamano de pagina debe estar entre 1 y 100");
 
-		assertThatThrownBy(() -> habitacionService.findAll(null, null, 0, 10, "password", "ASC"))
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, null, null, null, 0, 10, "password", "ASC"))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage("Campo de ordenamiento no permitido: password");
 
-		assertThatThrownBy(() -> habitacionService.findAll(null, null, 0, 10, "id", "ARRIBA"))
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, null, null, null, 0, 10, "id", "ARRIBA"))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage("La direccion de ordenamiento debe ser ASC o DESC");
+	}
+
+	@Test
+	void shouldFilterHabitacionesWithSimpleFiltersAndPagination() {
+		when(habitacionRepository.findAll(anySpecification(), any(Pageable.class)))
+				.thenReturn(new PageImpl<>(List.of(buildHabitacion(4L, "401", EstadoHabitacion.DISPONIBLE))));
+
+		PageResponse<HabitacionResponse> response = habitacionService.findAll(
+				TipoHabitacion.SUITE,
+				EstadoHabitacion.DISPONIBLE,
+				2,
+				new BigDecimal("100.00"),
+				new BigDecimal("300.00"),
+				0,
+				10,
+				"precioPorNoche",
+				"ASC"
+		);
+
+		ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+		verify(habitacionRepository).findAll(anySpecification(), pageableCaptor.capture());
+
+		assertThat(pageableCaptor.getValue().getSort().getOrderFor("precioPorNoche").isAscending()).isTrue();
+		assertThat(response.content()).hasSize(1);
+	}
+
+	@Test
+	void shouldRejectInvalidSimpleFilters() {
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, 0, null, null, 0, 10, "id", "ASC"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("La capacidad minima debe ser mayor a cero");
+
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, null, new BigDecimal("-1.00"), null, 0, 10, "id", "ASC"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("El precio minimo no puede ser negativo");
+
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, null, null, new BigDecimal("-1.00"), 0, 10, "id", "ASC"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("El precio maximo no puede ser negativo");
+
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, null, new BigDecimal("300.00"), new BigDecimal("100.00"), 0, 10, "id", "ASC"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("El precio minimo no puede ser mayor al precio maximo");
 	}
 
 	@Test
@@ -275,5 +319,9 @@ class HabitacionServiceTest {
 				.precioPorNoche(new BigDecimal("120.00"))
 				.descripcion("Habitacion simple")
 				.build();
+	}
+
+	private Specification<Habitacion> anySpecification() {
+		return any();
 	}
 }

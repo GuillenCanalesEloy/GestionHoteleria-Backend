@@ -1,10 +1,12 @@
 package com.Grupo1.GestionHoteleria_Backend.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,23 +44,19 @@ public class HabitacionService {
 	public PageResponse<HabitacionResponse> findAll(
 			TipoHabitacion tipo,
 			EstadoHabitacion estado,
+			Integer capacidadMin,
+			BigDecimal precioMin,
+			BigDecimal precioMax,
 			int page,
 			int size,
 			String sortBy,
 			String direction
 	) {
+		validateFilters(capacidadMin, precioMin, precioMax);
 		PageRequest pageable = buildPageRequest(page, size, sortBy, direction);
+		Specification<Habitacion> specification = buildSpecification(tipo, estado, capacidadMin, precioMin, precioMax);
 
-		if (tipo != null) {
-			return PageResponse.fromPage(habitacionRepository.findByTipo(tipo, pageable)
-					.map(HabitacionResponse::fromEntity));
-		}
-		if (estado != null) {
-			return PageResponse.fromPage(habitacionRepository.findByEstado(estado, pageable)
-					.map(HabitacionResponse::fromEntity));
-		}
-
-		return PageResponse.fromPage(habitacionRepository.findAll(pageable)
+		return PageResponse.fromPage(habitacionRepository.findAll(specification, pageable)
 				.map(HabitacionResponse::fromEntity));
 	}
 
@@ -174,5 +172,60 @@ public class HabitacionService {
 		} catch (IllegalArgumentException exception) {
 			throw new IllegalArgumentException("La direccion de ordenamiento debe ser ASC o DESC");
 		}
+	}
+
+	private void validateFilters(Integer capacidadMin, BigDecimal precioMin, BigDecimal precioMax) {
+		if (capacidadMin != null && capacidadMin < 1) {
+			throw new IllegalArgumentException("La capacidad minima debe ser mayor a cero");
+		}
+		if (precioMin != null && precioMin.compareTo(BigDecimal.ZERO) < 0) {
+			throw new IllegalArgumentException("El precio minimo no puede ser negativo");
+		}
+		if (precioMax != null && precioMax.compareTo(BigDecimal.ZERO) < 0) {
+			throw new IllegalArgumentException("El precio maximo no puede ser negativo");
+		}
+		if (precioMin != null && precioMax != null && precioMin.compareTo(precioMax) > 0) {
+			throw new IllegalArgumentException("El precio minimo no puede ser mayor al precio maximo");
+		}
+	}
+
+	private Specification<Habitacion> buildSpecification(
+			TipoHabitacion tipo,
+			EstadoHabitacion estado,
+			Integer capacidadMin,
+			BigDecimal precioMin,
+			BigDecimal precioMax
+	) {
+		return Specification
+				.where(hasTipo(tipo))
+				.and(hasEstado(estado))
+				.and(hasCapacidadMin(capacidadMin))
+				.and(hasPrecioMin(precioMin))
+				.and(hasPrecioMax(precioMax));
+	}
+
+	private Specification<Habitacion> hasTipo(TipoHabitacion tipo) {
+		return (root, query, criteriaBuilder) ->
+				tipo == null ? null : criteriaBuilder.equal(root.get("tipo"), tipo);
+	}
+
+	private Specification<Habitacion> hasEstado(EstadoHabitacion estado) {
+		return (root, query, criteriaBuilder) ->
+				estado == null ? null : criteriaBuilder.equal(root.get("estado"), estado);
+	}
+
+	private Specification<Habitacion> hasCapacidadMin(Integer capacidadMin) {
+		return (root, query, criteriaBuilder) ->
+				capacidadMin == null ? null : criteriaBuilder.greaterThanOrEqualTo(root.get("capacidad"), capacidadMin);
+	}
+
+	private Specification<Habitacion> hasPrecioMin(BigDecimal precioMin) {
+		return (root, query, criteriaBuilder) ->
+				precioMin == null ? null : criteriaBuilder.greaterThanOrEqualTo(root.get("precioPorNoche"), precioMin);
+	}
+
+	private Specification<Habitacion> hasPrecioMax(BigDecimal precioMax) {
+		return (root, query, criteriaBuilder) ->
+				precioMax == null ? null : criteriaBuilder.lessThanOrEqualTo(root.get("precioPorNoche"), precioMax);
 	}
 }

@@ -1,5 +1,7 @@
 package com.Grupo1.GestionHoteleria_Backend.controller;
 
+import java.math.BigDecimal;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,12 +37,25 @@ public class HabitacionController {
 	public ResponseEntity<PageResponse<HabitacionResponse>> findAll(
 			@RequestParam(required = false) TipoHabitacion tipo,
 			@RequestParam(required = false) EstadoHabitacion estado,
+			@RequestParam(required = false) Integer capacidadMin,
+			@RequestParam(required = false) BigDecimal precioMin,
+			@RequestParam(required = false) BigDecimal precioMax,
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "id") String sortBy,
 			@RequestParam(defaultValue = "ASC") String direction
 	) {
-		return ResponseEntity.ok(habitacionService.findAll(tipo, estado, page, size, sortBy, direction));
+		return ResponseEntity.ok(habitacionService.findAll(
+				tipo,
+				estado,
+				capacidadMin,
+				precioMin,
+				precioMax,
+				page,
+				size,
+				sortBy,
+				direction
+		));
 	}
 
 	@GetMapping("/{id}")
