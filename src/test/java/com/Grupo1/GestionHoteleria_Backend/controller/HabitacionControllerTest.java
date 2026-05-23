@@ -2,6 +2,7 @@ package com.Grupo1.GestionHoteleria_Backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.CreateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.PageResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
@@ -47,34 +49,70 @@ class HabitacionControllerTest {
 
 	@Test
 	void shouldListHabitaciones() throws Exception {
-		when(habitacionService.findAll()).thenReturn(List.of(buildResponse(1L, "101", TipoHabitacion.SIMPLE, EstadoHabitacion.DISPONIBLE)));
+		when(habitacionService.findAll(null, null, 0, 10, "id", "ASC"))
+				.thenReturn(buildPageResponse(List.of(buildResponse(1L, "101", TipoHabitacion.SIMPLE, EstadoHabitacion.DISPONIBLE)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$[0].id").value(1))
-				.andExpect(jsonPath("$[0].numero").value("101"))
-				.andExpect(jsonPath("$[0].tipo").value("SIMPLE"))
-				.andExpect(jsonPath("$[0].estado").value("DISPONIBLE"));
+				.andExpect(jsonPath("$.content[0].id").value(1))
+				.andExpect(jsonPath("$.content[0].numero").value("101"))
+				.andExpect(jsonPath("$.content[0].tipo").value("SIMPLE"))
+				.andExpect(jsonPath("$.content[0].estado").value("DISPONIBLE"))
+				.andExpect(jsonPath("$.page").value(0))
+				.andExpect(jsonPath("$.size").value(10))
+				.andExpect(jsonPath("$.totalElements").value(1))
+				.andExpect(jsonPath("$.totalPages").value(1));
 	}
 
 	@Test
 	void shouldFilterHabitacionesByTipo() throws Exception {
-		when(habitacionService.findByTipo(TipoHabitacion.SUITE))
-				.thenReturn(List.of(buildResponse(2L, "501", TipoHabitacion.SUITE, EstadoHabitacion.DISPONIBLE)));
+		when(habitacionService.findAll(TipoHabitacion.SUITE, null, 0, 10, "id", "ASC"))
+				.thenReturn(buildPageResponse(List.of(buildResponse(2L, "501", TipoHabitacion.SUITE, EstadoHabitacion.DISPONIBLE)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones").param("tipo", "SUITE"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$[0].tipo").value("SUITE"));
+				.andExpect(jsonPath("$.content[0].tipo").value("SUITE"));
 	}
 
 	@Test
 	void shouldFilterHabitacionesByEstado() throws Exception {
-		when(habitacionService.findByEstado(EstadoHabitacion.MANTENIMIENTO))
-				.thenReturn(List.of(buildResponse(3L, "301", TipoHabitacion.DOBLE, EstadoHabitacion.MANTENIMIENTO)));
+		when(habitacionService.findAll(null, EstadoHabitacion.MANTENIMIENTO, 0, 10, "id", "ASC"))
+				.thenReturn(buildPageResponse(List.of(buildResponse(3L, "301", TipoHabitacion.DOBLE, EstadoHabitacion.MANTENIMIENTO)), 0, 10, 1));
 
 		mockMvc.perform(get("/api/habitaciones").param("estado", "MANTENIMIENTO"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$[0].estado").value("MANTENIMIENTO"));
+				.andExpect(jsonPath("$.content[0].estado").value("MANTENIMIENTO"));
+	}
+
+	@Test
+	void shouldListHabitacionesWithPaginationAndSorting() throws Exception {
+		when(habitacionService.findAll(null, null, 1, 5, "precioPorNoche", "DESC"))
+				.thenReturn(buildPageResponse(List.of(buildResponse(4L, "401", TipoHabitacion.SUITE, EstadoHabitacion.DISPONIBLE)), 1, 5, 12));
+
+		mockMvc.perform(get("/api/habitaciones")
+						.param("page", "1")
+						.param("size", "5")
+						.param("sortBy", "precioPorNoche")
+						.param("direction", "DESC"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content[0].numero").value("401"))
+				.andExpect(jsonPath("$.page").value(1))
+				.andExpect(jsonPath("$.size").value(5))
+				.andExpect(jsonPath("$.totalElements").value(12))
+				.andExpect(jsonPath("$.totalPages").value(3))
+				.andExpect(jsonPath("$.first").value(false))
+				.andExpect(jsonPath("$.last").value(false));
+	}
+
+	@Test
+	void shouldRejectInvalidPaginationParameters() throws Exception {
+		when(habitacionService.findAll(isNull(), isNull(), eq(-1), eq(10), eq("id"), eq("ASC")))
+				.thenThrow(new IllegalArgumentException("El numero de pagina no puede ser negativo"));
+
+		mockMvc.perform(get("/api/habitaciones").param("page", "-1"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("El numero de pagina no puede ser negativo"))
+				.andExpect(jsonPath("$.path").value("/api/habitaciones"));
 	}
 
 	@Test
@@ -295,6 +333,24 @@ class HabitacionControllerTest {
 				"Habitacion de prueba",
 				LocalDateTime.of(2026, 5, 19, 10, 0),
 				LocalDateTime.of(2026, 5, 19, 11, 0)
+		);
+	}
+
+	private PageResponse<HabitacionResponse> buildPageResponse(
+			List<HabitacionResponse> content,
+			int page,
+			int size,
+			long totalElements
+	) {
+		int totalPages = (int) Math.ceil((double) totalElements / size);
+		return new PageResponse<>(
+				content,
+				page,
+				size,
+				totalElements,
+				totalPages,
+				page == 0,
+				page + 1 >= totalPages
 		);
 	}
 }

@@ -3,6 +3,7 @@ package com.Grupo1.GestionHoteleria_Backend.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,9 +14,13 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.CreateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.PageResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.Habitacion;
@@ -44,6 +49,76 @@ class HabitacionServiceTest {
 		assertThat(habitaciones).hasSize(1);
 		assertThat(habitaciones.getFirst().numero()).isEqualTo("101");
 		assertThat(habitaciones.getFirst().estado()).isEqualTo(EstadoHabitacion.DISPONIBLE);
+	}
+
+	@Test
+	void shouldListHabitacionesWithPaginationAndSorting() {
+		when(habitacionRepository.findAll(any(Pageable.class)))
+				.thenReturn(new PageImpl<>(List.of(buildHabitacion(1L, "101", EstadoHabitacion.DISPONIBLE))));
+
+		PageResponse<HabitacionResponse> response = habitacionService.findAll(null, null, 0, 10, "numero", "DESC");
+
+		ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+		verify(habitacionRepository).findAll(pageableCaptor.capture());
+
+		Pageable pageable = pageableCaptor.getValue();
+		assertThat(pageable.getPageNumber()).isEqualTo(0);
+		assertThat(pageable.getPageSize()).isEqualTo(10);
+		assertThat(pageable.getSort().getOrderFor("numero").isDescending()).isTrue();
+		assertThat(response.content()).hasSize(1);
+		assertThat(response.content().getFirst().numero()).isEqualTo("101");
+	}
+
+	@Test
+	void shouldFilterHabitacionesByTipoWithPagination() {
+		when(habitacionRepository.findByTipo(eq(TipoHabitacion.SUITE), any(Pageable.class)))
+				.thenReturn(new PageImpl<>(List.of(buildHabitacion(2L, "501", EstadoHabitacion.DISPONIBLE))));
+
+		PageResponse<HabitacionResponse> response = habitacionService.findAll(TipoHabitacion.SUITE, null, 1, 5, "precioPorNoche", "ASC");
+
+		ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+		verify(habitacionRepository).findByTipo(eq(TipoHabitacion.SUITE), pageableCaptor.capture());
+
+		Pageable pageable = pageableCaptor.getValue();
+		assertThat(pageable.getPageNumber()).isEqualTo(1);
+		assertThat(pageable.getPageSize()).isEqualTo(5);
+		assertThat(pageable.getSort().getOrderFor("precioPorNoche").isAscending()).isTrue();
+		assertThat(response.content()).hasSize(1);
+	}
+
+	@Test
+	void shouldFilterHabitacionesByEstadoWithPagination() {
+		when(habitacionRepository.findByEstado(eq(EstadoHabitacion.MANTENIMIENTO), any(Pageable.class)))
+				.thenReturn(new PageImpl<>(List.of(buildHabitacion(3L, "301", EstadoHabitacion.MANTENIMIENTO))));
+
+		PageResponse<HabitacionResponse> response = habitacionService.findAll(null, EstadoHabitacion.MANTENIMIENTO, 0, 20, "estado", "DESC");
+
+		ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+		verify(habitacionRepository).findByEstado(eq(EstadoHabitacion.MANTENIMIENTO), pageableCaptor.capture());
+
+		Pageable pageable = pageableCaptor.getValue();
+		assertThat(pageable.getPageSize()).isEqualTo(20);
+		assertThat(pageable.getSort().getOrderFor("estado").isDescending()).isTrue();
+		assertThat(response.content().getFirst().estado()).isEqualTo(EstadoHabitacion.MANTENIMIENTO);
+	}
+
+	@Test
+	void shouldRejectInvalidPaginationAndSorting() {
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, -1, 10, "id", "ASC"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("El numero de pagina no puede ser negativo");
+
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, 0, 101, "id", "ASC"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("El tamano de pagina debe estar entre 1 y 100");
+
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, 0, 10, "password", "ASC"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("Campo de ordenamiento no permitido: password");
+
+		assertThatThrownBy(() -> habitacionService.findAll(null, null, 0, 10, "id", "ARRIBA"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("La direccion de ordenamiento debe ser ASC o DESC");
 	}
 
 	@Test

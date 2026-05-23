@@ -77,6 +77,14 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.BAD_REQUEST, "Parametros de entrada invalidos", request, validations);
 	}
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalArgument(
+			IllegalArgumentException exception,
+			HttpServletRequest request
+	) {
+		return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request, null);
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleGeneral(Exception exception, HttpServletRequest request) {
 		return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", request, null);

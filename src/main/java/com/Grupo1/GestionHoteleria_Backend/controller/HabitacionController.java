@@ -1,7 +1,5 @@
 package com.Grupo1.GestionHoteleria_Backend.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.CreateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.PageResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
@@ -33,18 +32,15 @@ public class HabitacionController {
 	private final HabitacionService habitacionService;
 
 	@GetMapping
-	public ResponseEntity<List<HabitacionResponse>> findAll(
+	public ResponseEntity<PageResponse<HabitacionResponse>> findAll(
 			@RequestParam(required = false) TipoHabitacion tipo,
-			@RequestParam(required = false) EstadoHabitacion estado
+			@RequestParam(required = false) EstadoHabitacion estado,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "id") String sortBy,
+			@RequestParam(defaultValue = "ASC") String direction
 	) {
-		if (tipo != null) {
-			return ResponseEntity.ok(habitacionService.findByTipo(tipo));
-		}
-		if (estado != null) {
-			return ResponseEntity.ok(habitacionService.findByEstado(estado));
-		}
-
-		return ResponseEntity.ok(habitacionService.findAll());
+		return ResponseEntity.ok(habitacionService.findAll(tipo, estado, page, size, sortBy, direction));
 	}
 
 	@GetMapping("/{id}")
