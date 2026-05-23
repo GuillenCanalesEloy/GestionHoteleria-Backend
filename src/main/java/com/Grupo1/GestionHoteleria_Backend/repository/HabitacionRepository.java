@@ -31,6 +31,13 @@ public interface HabitacionRepository extends JpaRepository<Habitacion, Long>, J
 
 	long countByEstado(EstadoHabitacion estado);
 
+	@Query("""
+			select h.tipo as tipo, count(h.id) as total
+			from Habitacion h
+			group by h.tipo
+			""")
+	List<TipoHabitacionCount> countHabitacionesByTipo();
+
 	List<Habitacion> findByTipo(TipoHabitacion tipo);
 
 	List<Habitacion> findByEstado(EstadoHabitacion estado);

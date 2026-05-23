@@ -18,7 +18,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardIngresosResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.DashboardMetricasResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardOcupacionResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.DashboardOcupacionTipoItemResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.DashboardReservaEstadoMetricResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardResumenResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.PageResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.ReservaResponse;
@@ -137,6 +140,46 @@ class DashboardControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.ingresosTotales").value(1200.00))
 				.andExpect(jsonPath("$.reservasContabilizadas").value(4));
+	}
+
+	@Test
+	void shouldGetMetricas() throws Exception {
+		LocalDate ingresosDesde = LocalDate.of(2026, 9, 1);
+		LocalDate ingresosHasta = LocalDate.of(2026, 9, 30);
+		LocalDate ocupacionEntrada = LocalDate.of(2026, 9, 10);
+		LocalDate ocupacionSalida = LocalDate.of(2026, 9, 12);
+		when(dashboardService.getMetricas(ingresosDesde, ingresosHasta, ocupacionEntrada, ocupacionSalida))
+				.thenReturn(new DashboardMetricasResponse(
+						6,
+						4,
+						1,
+						1,
+						new DashboardReservaEstadoMetricResponse(2, 3, 5),
+						ingresosDesde,
+						ingresosHasta,
+						new BigDecimal("1400.00"),
+						ocupacionEntrada,
+						ocupacionSalida,
+						List.of(new DashboardOcupacionTipoItemResponse(
+								TipoHabitacion.DOBLE,
+								4,
+								3,
+								1,
+								new BigDecimal("75.00")
+						))
+				));
+
+		mockMvc.perform(get("/api/dashboard/metricas")
+						.param("ingresosFechaDesde", "2026-09-01")
+						.param("ingresosFechaHasta", "2026-09-30")
+						.param("ocupacionFechaEntrada", "2026-09-10")
+						.param("ocupacionFechaSalida", "2026-09-12"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.totalHabitaciones").value(6))
+				.andExpect(jsonPath("$.reservasActivasPorEstado.totalActivas").value(5))
+				.andExpect(jsonPath("$.ingresosPorRango").value(1400.00))
+				.andExpect(jsonPath("$.ocupacionPorTipo[0].tipo").value("DOBLE"))
+				.andExpect(jsonPath("$.ocupacionPorTipo[0].porcentajeOcupacion").value(75.00));
 	}
 
 	private ReservaResponse buildReservaResponse() {

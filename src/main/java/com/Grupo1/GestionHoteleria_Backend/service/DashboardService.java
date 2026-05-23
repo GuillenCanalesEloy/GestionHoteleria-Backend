@@ -3,19 +3,26 @@ package com.Grupo1.GestionHoteleria_Backend.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardIngresosResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.DashboardMetricasResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardOcupacionResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.DashboardOcupacionTipoItemResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.DashboardReservaEstadoMetricResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardResumenResponse;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Rol;
+import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.repository.HabitacionRepository;
 import com.Grupo1.GestionHoteleria_Backend.repository.ReservaRepository;
+import com.Grupo1.GestionHoteleria_Backend.repository.TipoHabitacionCount;
 import com.Grupo1.GestionHoteleria_Backend.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -113,6 +120,93 @@ public class DashboardService {
 				ingresosConfirmados.add(ingresosFinalizados),
 				reservasContabilizadas
 		);
+	}
+
+	@Transactional(readOnly = true)
+	public DashboardMetricasResponse getMetricas(
+			LocalDate ingresosFechaDesde,
+			LocalDate ingresosFechaHasta,
+			LocalDate ocupacionFechaEntrada,
+			LocalDate ocupacionFechaSalida
+	) {
+		validateOptionalDateRange(ingresosFechaDesde, ingresosFechaHasta, "ingresosFechaHasta", "ingresosFechaDesde");
+		LocalDate effectiveOcupacionFechaEntrada = ocupacionFechaEntrada != null
+				? ocupacionFechaEntrada
+				: LocalDate.now();
+		LocalDate effectiveOcupacionFechaSalida = ocupacionFechaSalida != null
+				? ocupacionFechaSalida
+				: effectiveOcupacionFechaEntrada.plusDays(1);
+		validateDateRange(
+				effectiveOcupacionFechaEntrada,
+				effectiveOcupacionFechaSalida,
+				"ocupacionFechaSalida",
+				"ocupacionFechaEntrada"
+		);
+
+		long reservasPendientes = reservaRepository.countByEstado(EstadoReserva.PENDIENTE);
+		long reservasConfirmadas = reservaRepository.countByEstado(EstadoReserva.CONFIRMADA);
+		BigDecimal ingresosPorRango = reservaRepository.sumIngresosByEstadosAndFechaEntradaBetween(
+				ESTADOS_INGRESOS,
+				ingresosFechaDesde,
+				ingresosFechaHasta
+		);
+
+		return new DashboardMetricasResponse(
+				habitacionRepository.count(),
+				habitacionRepository.countByEstado(EstadoHabitacion.DISPONIBLE),
+				habitacionRepository.countByEstado(EstadoHabitacion.OCUPADA),
+				habitacionRepository.countByEstado(EstadoHabitacion.MANTENIMIENTO),
+				new DashboardReservaEstadoMetricResponse(
+						reservasPendientes,
+						reservasConfirmadas,
+						reservasPendientes + reservasConfirmadas
+				),
+				ingresosFechaDesde,
+				ingresosFechaHasta,
+				ingresosPorRango,
+				effectiveOcupacionFechaEntrada,
+				effectiveOcupacionFechaSalida,
+				buildOcupacionPorTipo(effectiveOcupacionFechaEntrada, effectiveOcupacionFechaSalida)
+		);
+	}
+
+	private List<DashboardOcupacionTipoItemResponse> buildOcupacionPorTipo(
+			LocalDate fechaEntrada,
+			LocalDate fechaSalida
+	) {
+		Map<TipoHabitacion, Long> habitacionesPorTipo = toCountMap(habitacionRepository.countHabitacionesByTipo());
+		Map<TipoHabitacion, Long> ocupadasPorTipo = toCountMap(
+				reservaRepository.countHabitacionesOcupadasByTipoBetween(fechaEntrada, fechaSalida)
+		);
+
+		return habitacionesPorTipo.entrySet().stream()
+				.map(entry -> {
+					long totalHabitaciones = entry.getValue();
+					long habitacionesOcupadas = ocupadasPorTipo.getOrDefault(entry.getKey(), 0L);
+					long habitacionesDisponibles = Math.max(totalHabitaciones - habitacionesOcupadas, 0);
+					return new DashboardOcupacionTipoItemResponse(
+							entry.getKey(),
+							totalHabitaciones,
+							habitacionesOcupadas,
+							habitacionesDisponibles,
+							calculatePercentage(habitacionesOcupadas, totalHabitaciones)
+					);
+				})
+				.toList();
+	}
+
+	private Map<TipoHabitacion, Long> toCountMap(List<TipoHabitacionCount> counts) {
+		Map<TipoHabitacion, Long> result = new EnumMap<>(TipoHabitacion.class);
+		counts.forEach(count -> result.put(count.getTipo(), count.getTotal()));
+		return result;
+	}
+
+	private BigDecimal calculatePercentage(long value, long total) {
+		return total == 0
+				? BigDecimal.ZERO.setScale(2)
+				: BigDecimal.valueOf(value)
+						.multiply(BigDecimal.valueOf(100))
+						.divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);
 	}
 
 	private void validateOptionalDateRange(

@@ -371,4 +371,18 @@ class SecurityAuthorizationTest {
 		mockMvc.perform(get("/api/dashboard/ingresos"))
 				.andExpect(status().isOk());
 	}
+
+	@Test
+	@WithMockUser(roles = "CLIENTE")
+	void shouldRejectClienteWhenAccessingDashboardMetricas() throws Exception {
+		mockMvc.perform(get("/api/dashboard/metricas"))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenAccessingDashboardMetricas() throws Exception {
+		mockMvc.perform(get("/api/dashboard/metricas"))
+				.andExpect(status().isOk());
+	}
 }

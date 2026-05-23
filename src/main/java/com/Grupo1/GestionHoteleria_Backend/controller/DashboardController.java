@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardIngresosResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.DashboardMetricasResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardOcupacionResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.DashboardResumenResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.PageResponse;
@@ -72,5 +73,20 @@ public class DashboardController {
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta
 	) {
 		return ResponseEntity.ok(dashboardService.getIngresos(fechaDesde, fechaHasta));
+	}
+
+	@GetMapping("/metricas")
+	public ResponseEntity<DashboardMetricasResponse> getMetricas(
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ingresosFechaDesde,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ingresosFechaHasta,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ocupacionFechaEntrada,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ocupacionFechaSalida
+	) {
+		return ResponseEntity.ok(dashboardService.getMetricas(
+				ingresosFechaDesde,
+				ingresosFechaHasta,
+				ocupacionFechaEntrada,
+				ocupacionFechaSalida
+		));
 	}
 }

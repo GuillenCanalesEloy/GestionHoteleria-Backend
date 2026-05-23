@@ -65,6 +65,19 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long>, JpaSpec
 	);
 
 	@Query("""
+			select r.habitacion.tipo as tipo, count(distinct r.habitacion.id) as total
+			from Reserva r
+			where r.estado <> com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva.CANCELADA
+			  and r.fechaEntrada < :fechaSalida
+			  and r.fechaSalida > :fechaEntrada
+			group by r.habitacion.tipo
+			""")
+	List<TipoHabitacionCount> countHabitacionesOcupadasByTipoBetween(
+			@Param("fechaEntrada") LocalDate fechaEntrada,
+			@Param("fechaSalida") LocalDate fechaSalida
+	);
+
+	@Query("""
 			select coalesce(sum(r.precioTotal), 0)
 			from Reserva r
 			where r.estado in :estados
