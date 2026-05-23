@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,6 +56,14 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ErrorResponse> handleBadCredentials(HttpServletRequest request) {
 		return buildResponse(HttpStatus.UNAUTHORIZED, "Email o contrasena incorrectos", request, null);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAccessDenied(
+			AccessDeniedException exception,
+			HttpServletRequest request
+	) {
+		return buildResponse(HttpStatus.FORBIDDEN, exception.getMessage(), request, null);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

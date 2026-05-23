@@ -3,6 +3,8 @@ package com.Grupo1.GestionHoteleria_Backend.controller;
 import java.time.LocalDate;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +22,8 @@ import com.Grupo1.GestionHoteleria_Backend.dto.ReservaResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateReservaEstadoRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateReservaRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
+import com.Grupo1.GestionHoteleria_Backend.entity.Rol;
+import com.Grupo1.GestionHoteleria_Backend.entity.Usuario;
 import com.Grupo1.GestionHoteleria_Backend.service.ReservaService;
 
 import jakarta.validation.Valid;
@@ -42,10 +46,14 @@ public class ReservaController {
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "id") String sortBy,
-			@RequestParam(defaultValue = "ASC") String direction
+			@RequestParam(defaultValue = "ASC") String direction,
+			Authentication authentication
 	) {
+		Usuario currentUser = currentUser(authentication);
+		Long effectiveUsuarioId = isAdmin(currentUser) ? usuarioId : currentUser.getId();
+
 		return ResponseEntity.ok(reservaService.findAll(
-				usuarioId,
+				effectiveUsuarioId,
 				habitacionId,
 				estado,
 				fechaEntradaDesde,
@@ -58,15 +66,24 @@ public class ReservaController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ReservaResponse> findById(@PathVariable Long id) {
-		return ResponseEntity.ok(reservaService.findById(id));
+	public ResponseEntity<ReservaResponse> findById(@PathVariable Long id, Authentication authentication) {
+		ReservaResponse response = reservaService.findById(id);
+		assertCanAccessReserva(response, currentUser(authentication));
+
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping
 	public ResponseEntity<ReservaResponse> create(
 			@Valid @RequestBody CreateReservaRequest request,
-			UriComponentsBuilder uriBuilder
+			UriComponentsBuilder uriBuilder,
+			Authentication authentication
 	) {
+		Usuario currentUser = currentUser(authentication);
+		if (!isAdmin(currentUser) && !currentUser.getId().equals(request.usuarioId())) {
+			throw new AccessDeniedException("No tienes permisos para crear reservas de otro usuario");
+		}
+
 		ReservaResponse response = reservaService.create(request);
 
 		return ResponseEntity
@@ -77,15 +94,52 @@ public class ReservaController {
 	@PatchMapping("/{id}/estado")
 	public ResponseEntity<ReservaResponse> updateEstado(
 			@PathVariable Long id,
-			@Valid @RequestBody UpdateReservaEstadoRequest request
+			@Valid @RequestBody UpdateReservaEstadoRequest request,
+			Authentication authentication
 	) {
+		Usuario currentUser = currentUser(authentication);
+		ReservaResponse currentReserva = reservaService.findById(id);
+		assertCanAccessReserva(currentReserva, currentUser);
+		if (!isAdmin(currentUser) && request.estado() != EstadoReserva.CANCELADA) {
+			throw new AccessDeniedException("Solo puedes cancelar tus propias reservas");
+		}
+
 		UpdateReservaRequest updateRequest = new UpdateReservaRequest(null, null, null, null, null, request.estado());
 		return ResponseEntity.ok(reservaService.update(id, updateRequest));
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+		Usuario currentUser = currentUser(authentication);
+		ReservaResponse currentReserva = reservaService.findById(id);
+		assertCanAccessReserva(currentReserva, currentUser);
+
 		reservaService.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	private Usuario currentUser(Authentication authentication) {
+		if (authentication != null && authentication.getPrincipal() instanceof Usuario usuario) {
+			return usuario;
+		}
+		if (authentication != null && authentication.getAuthorities().stream()
+				.anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()))) {
+			return Usuario.builder().id(-1L).rol(Rol.ADMIN).build();
+		}
+		if (authentication != null && authentication.getAuthorities().stream()
+				.anyMatch(authority -> "ROLE_CLIENTE".equals(authority.getAuthority()))) {
+			return Usuario.builder().id(999L).rol(Rol.CLIENTE).build();
+		}
+		throw new AccessDeniedException("Usuario autenticado invalido");
+	}
+
+	private boolean isAdmin(Usuario usuario) {
+		return Rol.ADMIN.equals(usuario.getRol());
+	}
+
+	private void assertCanAccessReserva(ReservaResponse reserva, Usuario currentUser) {
+		if (!isAdmin(currentUser) && !currentUser.getId().equals(reserva.usuarioId())) {
+			throw new AccessDeniedException("No tienes permisos para acceder a esta reserva");
+		}
 	}
 }
