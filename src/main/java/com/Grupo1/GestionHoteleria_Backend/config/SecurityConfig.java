@@ -1,11 +1,15 @@
 package com.Grupo1.GestionHoteleria_Backend.config;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -24,6 +28,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.Grupo1.GestionHoteleria_Backend.security.JwtAuthenticationFilter;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -56,9 +62,9 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.exceptionHandling(exception -> exception
 						.authenticationEntryPoint((request, response, authException) ->
-								response.setStatus(org.springframework.http.HttpStatus.UNAUTHORIZED.value()))
+								writeErrorResponse(response, request, HttpStatus.UNAUTHORIZED, "No autenticado"))
 						.accessDeniedHandler((request, response, accessDeniedException) ->
-								response.setStatus(org.springframework.http.HttpStatus.FORBIDDEN.value()))
+								writeErrorResponse(response, request, HttpStatus.FORBIDDEN, "Acceso denegado"))
 				)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -106,5 +112,30 @@ public class SecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
+	}
+
+	private void writeErrorResponse(
+			HttpServletResponse response,
+			HttpServletRequest request,
+			HttpStatus status,
+			String message
+	) throws IOException {
+		response.setStatus(status.value());
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.getWriter().write("""
+				{"timestamp":"%s","status":%d,"error":"%s","message":"%s","path":"%s","validations":null}
+				""".formatted(
+						LocalDateTime.now(),
+						status.value(),
+						escapeJson(status.getReasonPhrase()),
+						escapeJson(message),
+						escapeJson(request.getRequestURI())
+				));
+	}
+
+	private String escapeJson(String value) {
+		return value
+				.replace("\\", "\\\\")
+				.replace("\"", "\\\"");
 	}
 }
