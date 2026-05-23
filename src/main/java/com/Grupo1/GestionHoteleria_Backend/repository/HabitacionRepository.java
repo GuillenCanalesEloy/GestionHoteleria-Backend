@@ -7,14 +7,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.Habitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 
+import jakarta.persistence.LockModeType;
+
 public interface HabitacionRepository extends JpaRepository<Habitacion, Long>, JpaSpecificationExecutor<Habitacion> {
 
 	Optional<Habitacion> findByNumero(String numero);
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("select h from Habitacion h where h.id = :id")
+	Optional<Habitacion> findByIdForUpdate(@Param("id") Long id);
 
 	boolean existsByNumero(String numero);
 

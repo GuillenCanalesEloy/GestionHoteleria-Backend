@@ -144,7 +144,7 @@ class ReservaServiceTest {
 				2
 		);
 		when(usuarioRepository.findById(1L)).thenReturn(Optional.of(buildUsuario()));
-		when(habitacionRepository.findById(10L)).thenReturn(Optional.of(buildHabitacion()));
+		when(habitacionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(buildHabitacion()));
 		when(reservaRepository.existsActiveOverlap(10L, request.fechaEntrada(), request.fechaSalida())).thenReturn(false);
 		when(reservaRepository.save(any(Reserva.class))).thenAnswer(invocation -> {
 			Reserva reserva = invocation.getArgument(0);
@@ -173,7 +173,7 @@ class ReservaServiceTest {
 				2
 		);
 		when(usuarioRepository.findById(1L)).thenReturn(Optional.of(buildUsuario()));
-		when(habitacionRepository.findById(10L)).thenReturn(Optional.of(buildHabitacion()));
+		when(habitacionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(buildHabitacion()));
 		when(reservaRepository.existsActiveOverlap(10L, request.fechaEntrada(), request.fechaSalida())).thenReturn(true);
 
 		assertThatThrownBy(() -> reservaService.create(request))
@@ -211,7 +211,7 @@ class ReservaServiceTest {
 				2
 		);
 		when(usuarioRepository.findById(1L)).thenReturn(Optional.of(buildUsuario()));
-		when(habitacionRepository.findById(99L)).thenReturn(Optional.empty());
+		when(habitacionRepository.findByIdForUpdate(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> reservaService.create(request))
 				.isInstanceOf(HabitacionNotFoundException.class)
@@ -223,7 +223,7 @@ class ReservaServiceTest {
 	@Test
 	void shouldRejectInvalidReservationDatesAndCapacity() {
 		when(usuarioRepository.findById(1L)).thenReturn(Optional.of(buildUsuario()));
-		when(habitacionRepository.findById(10L)).thenReturn(Optional.of(buildHabitacion()));
+		when(habitacionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(buildHabitacion()));
 
 		assertThatThrownBy(() -> reservaService.create(new CreateReservaRequest(
 				1L,
@@ -274,7 +274,7 @@ class ReservaServiceTest {
 		);
 
 		when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
-		when(habitacionRepository.findById(11L)).thenReturn(Optional.of(nuevaHabitacion));
+		when(habitacionRepository.findByIdForUpdate(11L)).thenReturn(Optional.of(nuevaHabitacion));
 		when(reservaRepository.existsActiveOverlapExcludingReserva(
 				11L,
 				1L,
@@ -306,6 +306,7 @@ class ReservaServiceTest {
 		);
 
 		when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+		when(habitacionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(buildHabitacion()));
 		when(reservaRepository.existsActiveOverlapExcludingReserva(
 				10L,
 				1L,

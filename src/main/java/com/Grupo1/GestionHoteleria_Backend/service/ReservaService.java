@@ -82,7 +82,7 @@ public class ReservaService {
 	@Transactional
 	public ReservaResponse create(CreateReservaRequest request) {
 		Usuario usuario = findUsuarioById(request.usuarioId());
-		Habitacion habitacion = findHabitacionById(request.habitacionId());
+		Habitacion habitacion = lockHabitacionForReservation(request.habitacionId());
 
 		validateReservationData(request.fechaEntrada(), request.fechaSalida(), request.cantidadHuespedes(), habitacion);
 		validateHabitacionDisponible(habitacion.getId(), request.fechaEntrada(), request.fechaSalida(), null);
@@ -108,7 +108,7 @@ public class ReservaService {
 			reserva.setUsuario(findUsuarioById(request.usuarioId()));
 		}
 		if (request.habitacionId() != null) {
-			reserva.setHabitacion(findHabitacionById(request.habitacionId()));
+			reserva.setHabitacion(lockHabitacionForReservation(request.habitacionId()));
 		}
 		if (request.fechaEntrada() != null) {
 			reserva.setFechaEntrada(request.fechaEntrada());
@@ -121,6 +121,9 @@ public class ReservaService {
 		}
 		if (request.estado() != null) {
 			reserva.setEstado(request.estado());
+		}
+		if (request.habitacionId() == null) {
+			reserva.setHabitacion(lockHabitacionForReservation(reserva.getHabitacion().getId()));
 		}
 
 		validateReservationData(
@@ -163,8 +166,8 @@ public class ReservaService {
 				.orElseThrow(() -> new UsuarioNotFoundException(id));
 	}
 
-	private Habitacion findHabitacionById(Long id) {
-		return habitacionRepository.findById(id)
+	private Habitacion lockHabitacionForReservation(Long id) {
+		return habitacionRepository.findByIdForUpdate(id)
 				.orElseThrow(() -> new HabitacionNotFoundException(id));
 	}
 

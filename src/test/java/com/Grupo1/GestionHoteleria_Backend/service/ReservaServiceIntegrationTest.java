@@ -137,6 +137,52 @@ class ReservaServiceIntegrationTest {
 	}
 
 	@Test
+	void shouldRejectExactPartialAndInternalOverlaps() {
+		reservaService.create(new CreateReservaRequest(
+				usuario.getId(),
+				habitacion.getId(),
+				LocalDate.of(2026, 12, 10),
+				LocalDate.of(2026, 12, 15),
+				1
+		));
+
+		assertOverlapRejected(LocalDate.of(2026, 12, 10), LocalDate.of(2026, 12, 15));
+		assertOverlapRejected(LocalDate.of(2026, 12, 8), LocalDate.of(2026, 12, 12));
+		assertOverlapRejected(LocalDate.of(2026, 12, 12), LocalDate.of(2026, 12, 17));
+		assertOverlapRejected(LocalDate.of(2026, 12, 11), LocalDate.of(2026, 12, 14));
+		assertOverlapRejected(LocalDate.of(2026, 12, 8), LocalDate.of(2026, 12, 17));
+	}
+
+	@Test
+	void shouldAllowContiguousDateRangesForSameHabitacion() {
+		reservaService.create(new CreateReservaRequest(
+				usuario.getId(),
+				habitacion.getId(),
+				LocalDate.of(2027, 1, 10),
+				LocalDate.of(2027, 1, 15),
+				1
+		));
+
+		ReservaResponse startsAtPreviousCheckout = reservaService.create(new CreateReservaRequest(
+				usuario.getId(),
+				habitacion.getId(),
+				LocalDate.of(2027, 1, 15),
+				LocalDate.of(2027, 1, 17),
+				1
+		));
+		ReservaResponse endsAtPreviousCheckin = reservaService.create(new CreateReservaRequest(
+				usuario.getId(),
+				habitacion.getId(),
+				LocalDate.of(2027, 1, 8),
+				LocalDate.of(2027, 1, 10),
+				1
+		));
+
+		assertThat(startsAtPreviousCheckout.id()).isNotNull();
+		assertThat(endsAtPreviousCheckin.id()).isNotNull();
+	}
+
+	@Test
 	void shouldAllowReservaWhenPreviousOverlapIsCancelled() {
 		reservaRepository.save(Reserva.builder()
 				.usuario(usuario)
@@ -158,5 +204,18 @@ class ReservaServiceIntegrationTest {
 
 		assertThat(response.id()).isNotNull();
 		assertThat(response.precioTotal()).isEqualByComparingTo("300.00");
+	}
+
+	private void assertOverlapRejected(LocalDate fechaEntrada, LocalDate fechaSalida) {
+		assertThatThrownBy(() -> reservaService.create(new CreateReservaRequest(
+				usuario.getId(),
+				habitacion.getId(),
+				fechaEntrada,
+				fechaSalida,
+				1
+		)))
+				.isInstanceOf(HabitacionNoDisponibleException.class)
+				.hasMessage("La habitacion " + habitacion.getId()
+						+ " no esta disponible entre " + fechaEntrada + " y " + fechaSalida);
 	}
 }
