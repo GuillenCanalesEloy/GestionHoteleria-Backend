@@ -12,20 +12,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Import(SecurityAuthorizationTest.TestEndpoints.class)
 class SecurityAuthorizationTest {
 
 	@Autowired
@@ -287,18 +282,52 @@ class SecurityAuthorizationTest {
 	}
 
 	@Test
+	void shouldRejectAnonymousWhenAccessingReservas() throws Exception {
+		mockMvc.perform(get("/api/reservas"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
 	@WithMockUser(roles = "CLIENTE")
 	void shouldAllowClienteWhenAccessingReservas() throws Exception {
 		mockMvc.perform(get("/api/reservas"))
 				.andExpect(status().isOk());
 	}
 
-	@RestController
-	static class TestEndpoints {
+	@Test
+	@WithMockUser(roles = "CLIENTE")
+	void shouldAllowClienteWhenCreatingReservas() throws Exception {
+		mockMvc.perform(post("/api/reservas")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "usuarioId": 999,
+								  "habitacionId": 999,
+								  "fechaEntrada": "2026-08-10",
+								  "fechaSalida": "2026-08-12",
+								  "cantidadHuespedes": 2
+								}
+								"""))
+				.andExpect(status().isNotFound());
+	}
 
-		@GetMapping("/api/reservas")
-		ResponseEntity<Void> getReservas() {
-			return ResponseEntity.ok().build();
-		}
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void shouldAllowAdminWhenUpdatingReservaEstado() throws Exception {
+		mockMvc.perform(patch("/api/reservas/999/estado")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "estado": "CONFIRMADA"
+								}
+								"""))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(roles = "CLIENTE")
+	void shouldAllowClienteWhenDeletingReservas() throws Exception {
+		mockMvc.perform(delete("/api/reservas/999"))
+				.andExpect(status().isNotFound());
 	}
 }
