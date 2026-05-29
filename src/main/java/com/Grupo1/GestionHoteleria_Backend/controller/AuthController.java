@@ -11,6 +11,7 @@ import com.Grupo1.GestionHoteleria_Backend.dto.AuthResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.LoginRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.RegisterRequest;
 import com.Grupo1.GestionHoteleria_Backend.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Autenticación", description = "Endpoints para registro y login de usuarios")
 public class AuthController {
 
 	private final AuthService authService;
