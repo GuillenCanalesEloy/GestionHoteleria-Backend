@@ -98,7 +98,7 @@ public class ReservaAreaComunController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
-		ReservaAreaComun updated = reservaService.updateEstado(id, request.getEstado());
+		ReservaAreaComun updated = reservaService.updateEstado(id, request.estado());
 		return ResponseEntity.ok(ReservaAreaComunResponse.fromEntity(updated));
 	}
 
