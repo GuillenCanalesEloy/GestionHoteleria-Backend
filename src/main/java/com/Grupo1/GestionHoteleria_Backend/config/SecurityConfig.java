@@ -38,7 +38,11 @@ public class SecurityConfig {
 
 	private static final String[] AUTH_WHITELIST = {
 			"/api/auth/login",
-			"/api/auth/register"
+			"/api/auth/register",
+			"/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
+            "/api-docs/**"
 	};
 
 	private static final String[] ADMIN_ENDPOINTS = {
