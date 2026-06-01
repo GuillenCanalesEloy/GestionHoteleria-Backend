@@ -26,7 +26,7 @@ Nuevo orden de tareas:
 ```text
 1. KAN-29 Configurar arquitectura de paquetes
 2. KAN-26 Crear base de datos HotelDB
-3. KAN-25 Configurar conexion MySQL
+3. KAN-25 Configurar conexion PostgreSQL/Supabase
 4. KAN-27 Configurar JPA/Hibernate
 5. KAN-31 Crear entidad Usuario
 6. KAN-34 Configurar Spring Security
@@ -36,7 +36,7 @@ Nuevo orden de tareas:
 10. KAN-28 Configurar variables de entorno
 ```
 
-Este orden es correcto: primero se define la arquitectura de paquetes, luego se crea la base de datos `HotelDB` y despues se configura la conexion MySQL del backend apuntando a esa base. Asi se evita que Spring intente conectarse a una base que todavia no existe.
+Este orden es correcto: primero se define la arquitectura de paquetes, luego se prepara la base PostgreSQL en Supabase y despues se configura la conexion del backend apuntando a esa base. Asi se evita que Spring intente conectarse a una base que todavia no existe.
 
 La parte mas delicada es que `KAN-34 Configurar Spring Security` aparece antes que `KAN-30 Implementar sistema JWT`. Es aceptable si en `KAN-34` se deja primero una configuracion base con rutas publicas, `PasswordEncoder`, `AuthenticationManager` y CORS. Luego, en `KAN-30`, se agrega el filtro JWT a esa configuracion.
 
@@ -82,23 +82,23 @@ La aplicacion mantiene una arquitectura profesional por capas.
 Cada archivo nuevo tiene un paquete claro donde vivir.
 ```
 
-## KAN-26 Crear base de datos HotelDB
+## KAN-26 Preparar base de datos PostgreSQL en Supabase
 
-Crear la base de datos en MySQL:
+Crear o usar la base PostgreSQL del proyecto en Supabase. Por defecto, Supabase expone una base llamada `postgres`.
 
 ```sql
-CREATE DATABASE HotelDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+SELECT current_database();
 ```
 
-Verificar que exista:
+Verificar la conexion desde el panel SQL de Supabase:
 
 ```sql
-SHOW DATABASES;
+SELECT version();
 ```
 
 Durante desarrollo, se recomienda dejar que JPA/Hibernate cree o actualice las tablas automaticamente.
 
-## KAN-25 Configurar conexion MySQL
+## KAN-25 Configurar conexion PostgreSQL/Supabase
 
 Configurar `src/main/resources/application.properties` usando variables de entorno:
 
@@ -106,16 +106,16 @@ Configurar `src/main/resources/application.properties` usando variables de entor
 spring.datasource.url=${DB_URL}
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.driver-class-name=org.postgresql.Driver
 ```
 
 Ejemplo de `DB_URL`:
 
 ```text
-jdbc:mysql://localhost:3306/HotelDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+jdbc:postgresql://db.kwifhqxnqtmgyssbiemn.supabase.co:5432/postgres
 ```
 
-Nota: la conexion debe probarse despues de crear `HotelDB`.
+Nota: la conexion debe probarse despues de configurar el proyecto y la password de Supabase.
 
 ## KAN-27 Configurar JPA/Hibernate
 
@@ -140,8 +140,8 @@ Detalles importantes:
 
 ```text
 open-in-view=false evita consultas tardias desde la capa web.
-Hibernate detecta automaticamente el dialecto de MySQL desde la conexion.
-hibernate.jdbc.time_zone=UTC mantiene fechas consistentes entre Java y MySQL.
+Hibernate puede usar el dialecto `org.hibernate.dialect.PostgreSQLDialect`.
+hibernate.jdbc.time_zone=UTC mantiene fechas consistentes entre Java y PostgreSQL.
 ```
 
 Mas adelante, para produccion, conviene manejar cambios de base de datos con Flyway o Liquibase.
@@ -167,7 +167,7 @@ email debe ser unico.
 password debe guardarse encriptado con BCrypt.
 rol puede iniciar como CLIENTE.
 createdAt y updatedAt pueden manejarse con @PrePersist y @PreUpdate.
-Usar columnas explicitas created_at y updated_at para mantener consistencia en MySQL.
+Usar columnas explicitas created_at y updated_at para mantener consistencia en PostgreSQL.
 ```
 
 Tambien crear `entity/Rol.java` como enum:
@@ -451,9 +451,9 @@ JPA_SHOW_SQL
 Ejemplo local basado en `.env.example`:
 
 ```text
-DB_URL=jdbc:mysql://localhost:3306/HotelDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-DB_USERNAME=root
-DB_PASSWORD=admin
+DB_URL=jdbc:postgresql://db.kwifhqxnqtmgyssbiemn.supabase.co:5432/postgres
+DB_USERNAME=postgres
+DB_PASSWORD=tu_password_de_supabase
 JWT_SECRET=clave_super_segura_de_minimo_32_caracteres
 JWT_EXPIRATION_MS=86400000
 FRONTEND_URL=http://localhost:5173
@@ -468,9 +468,9 @@ El archivo `.env.example` se versiona como plantilla. El archivo `.env` real no 
 En PowerShell se pueden definir variables para una ejecucion local asi:
 
 ```powershell
-$env:DB_URL="jdbc:mysql://localhost:3306/HotelDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
-$env:DB_USERNAME="root"
-$env:DB_PASSWORD="admin"
+$env:DB_URL="jdbc:postgresql://db.kwifhqxnqtmgyssbiemn.supabase.co:5432/postgres"
+$env:DB_USERNAME="postgres"
+$env:DB_PASSWORD="tu_password_de_supabase"
 $env:JWT_SECRET="clave_super_segura_de_minimo_32_caracteres"
 $env:JWT_EXPIRATION_MS="86400000"
 $env:FRONTEND_URL="http://localhost:5173"
@@ -491,8 +491,8 @@ No se versionan credenciales reales como password o JWT_SECRET.
 ## Orden recomendado de implementacion
 
 1. `KAN-29` Crear paquetes base.
-2. `KAN-26` Crear base de datos `HotelDB`.
-3. `KAN-25` Configurar propiedades de conexion MySQL.
+2. `KAN-26` Preparar base de datos PostgreSQL en Supabase.
+3. `KAN-25` Configurar propiedades de conexion PostgreSQL/Supabase.
 4. `KAN-27` Configurar JPA/Hibernate.
 5. `KAN-31` Crear `Usuario`, `Rol` y `UsuarioRepository`.
 6. `KAN-34` Configurar Spring Security base.
@@ -788,7 +788,7 @@ Dependencias ya contempladas en `pom.xml`:
 ```text
 Spring Web
 Spring Data JPA
-MySQL Driver
+PostgreSQL Driver
 Lombok
 Validation
 Spring Security
@@ -842,7 +842,7 @@ Authorization: Bearer <token>
 
 ```text
 La aplicacion levanta sin errores.
-La conexion MySQL funciona.
+La conexion PostgreSQL/Supabase funciona.
 La tabla usuarios se crea correctamente.
 Register crea usuarios con password encriptado.
 Login devuelve JWT valido.
