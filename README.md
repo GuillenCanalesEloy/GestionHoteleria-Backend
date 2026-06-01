@@ -1,227 +1,178 @@
 # Sistema de Gestión Hotelera - Backend
 
-## Descripción General
+## Descripción
 
-El backend del Sistema de Gestión Hotelera es una API REST desarrollada con Spring Boot, diseñada para gestionar los procesos principales de un hotel y brindar servicios tanto al portal de clientes como al panel administrativo.
+Backend desarrollado con Spring Boot para la gestión integral de un sistema hotelero. Proporciona una API REST segura para la administración de usuarios, habitaciones, reservas y áreas comunes, además de funcionalidades de autenticación mediante JWT y generación de métricas para paneles administrativos.
 
 **Grupo:** Grupo1
 **Artifact:** GestionHoteleria-Backend
-**Versión:** 0.0.1-SNAPSHOT
+**Versión:** 1.0.0-SNAPSHOT
 
 ---
 
-# Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
-## Tecnologías Principales
-
-* Java 21
-* Spring Boot 4.0.6
-* Maven
-
-## Dependencias Implementadas
-
-* Spring Boot Starter Data JPA (persistencia y acceso a datos mediante ORM)
-* Spring Boot Starter Security (autenticación y autorización)
-* MySQL Connector J (conexión con la base de datos MySQL)
-* Lombok (reducción de código repetitivo)
-
-## Dependencias por Implementar
-
-* Spring Boot Starter Web (desarrollo de servicios REST)
-* JJWT (gestión de tokens JWT)
-* Spring Boot Starter Validation (validación de datos)
-* SpringDoc OpenAPI (documentación mediante Swagger)
+| Tecnología        | Descripción                    |
+| ----------------- | ------------------------------ |
+| Java 21           | Lenguaje principal             |
+| Spring Boot 4.0.6 | Framework Backend              |
+| Spring Security   | Seguridad y autenticación      |
+| Spring Data JPA   | Persistencia de datos          |
+| PostgreSQL        | Base de datos                  |
+| JWT               | Autenticación basada en tokens |
+| Swagger/OpenAPI   | Documentación de la API        |
+| Lombok            | Reducción de código repetitivo |
+| JUnit 5           | Pruebas unitarias              |
 
 ---
 
-# Módulos del Sistema
+## Funcionalidades
 
-## Autenticación
+### Autenticación
 
-Encargado de la gestión de acceso al sistema mediante autenticación basada en JWT.
+* Registro de usuarios.
+* Inicio de sesión.
+* Autenticación mediante JWT.
+* Control de acceso basado en roles.
 
-Funciones principales:
+### Gestión de Habitaciones
 
-* Inicio de sesión
-* Registro de usuarios
-* Renovación de tokens
-* Control de acceso según roles
+* Registro de habitaciones.
+* Actualización de información.
+* Consulta de habitaciones.
+* Control de disponibilidad.
 
-Roles disponibles:
-
-* ADMIN
-* RECEPCIONISTA
-* GERENTE
-* CLIENTE
-
----
-
-## Habitaciones
-
-Permite administrar las habitaciones del hotel.
-
-Funciones principales:
-
-* Registro de habitaciones
-* Actualización de información
-* Eliminación de registros
-* Consulta y búsqueda de habitaciones
-
-Estados disponibles:
+Estados:
 
 * DISPONIBLE
 * OCUPADA
 * MANTENIMIENTO
 
-Filtros:
+### Gestión de Reservas
 
-* Precio
-* Tipo de habitación
-* Disponibilidad
+* Crear reservas.
+* Modificar reservas.
+* Cancelar reservas.
+* Consultar historial de reservas.
 
----
+Estados:
 
-## Clientes
-
-Gestiona la información de los clientes registrados en el sistema.
-
-Funciones principales:
-
-* Registro de clientes
-* Actualización de datos
-* Consulta de historial de reservas
-
----
-
-## Reservas
-
-Módulo encargado de la gestión de reservas realizadas por los clientes.
-
-Funciones principales:
-
-* Crear reservas
-* Modificar reservas
-* Cancelar reservas
-* Registrar check-in y check-out
-
-Estados disponibles:
-
+* PENDIENTE
 * CONFIRMADA
 * CANCELADA
-* PENDIENTE
+
+### Gestión de Áreas Comunes
+
+* Registro de áreas comunes.
+* Administración de disponibilidad.
+* Reserva de áreas comunes.
+
+### Dashboard Administrativo
+
+* Métricas generales.
+* Ingresos.
+* Ocupación hotelera.
+* Estado de reservas.
+* Estadísticas por tipo de habitación.
+
+### Auditoría y Logs
+
+* Registro de inicios de sesión.
+* Registro de usuarios.
+* Recuperación de contraseñas.
 
 ---
 
-## Pagos
+## Roles del Sistema
 
-Administra los pagos asociados a las reservas.
+### Administrador
 
-Funciones principales:
+Tiene acceso completo a todas las funcionalidades del sistema, incluyendo la gestión de usuarios, habitaciones, reservas, áreas comunes y reportes.
 
-* Registro de pagos
-* Consulta de historial de pagos por reserva
+### Cliente
 
----
-
-## Empleados
-
-Gestiona el personal interno del hotel.
-
-Funciones principales:
-
-* Registro de empleados
-* Administración de usuarios internos
-* Asignación y gestión de roles
+Puede registrarse, iniciar sesión, consultar habitaciones disponibles, realizar reservas y visualizar su historial de reservas.
 
 ---
 
-## Reportes
-
-Genera información útil para la toma de decisiones administrativas.
-
-Reportes disponibles:
-
-* Ingresos por período
-* Tasa de ocupación
-* Clientes frecuentes
-
----
-
-# Estructura del Proyecto
+## Estructura del Proyecto
 
 ```text
-com.Grupo1.GestionHoteleria_Backend/
- ├── config/          # Configuraciones generales y seguridad
- ├── controller/      # Controladores REST
- ├── service/         # Lógica de negocio
- ├── repository/      # Acceso a datos mediante JPA
- ├── model/           # Entidades del sistema
- ├── dto/             # Objetos de transferencia de datos
- ├── exception/       # Manejo global de excepciones
- ├── security/        # Componentes de autenticación JWT
- └── GestionHoteleriaBackendApplication.java
+src/main/java/com/Grupo1/GestionHoteleria_Backend
+
+├── config
+├── controller
+├── dto
+├── entity
+├── exception
+├── repository
+├── security
+├── service
+└── GestionHoteleriaBackendApplication
 ```
 
 ---
 
-# Seguridad
+## Arquitectura del Sistema
 
-La seguridad del sistema estará basada en JWT (JSON Web Token).
+El backend sigue una arquitectura por capas que permite separar responsabilidades y facilitar el mantenimiento del código.
 
-Características principales:
-
-* Rutas públicas para autenticación y consulta de habitaciones.
-* Protección de recursos mediante token válido.
-* Control de acceso según roles de usuario.
-* Restricción de operaciones según permisos asignados.
-
----
-
-# Base de Datos
-
-* Motor de base de datos: MySQL
-* Persistencia mediante Spring Data JPA
-
-Tablas principales:
-
-* usuarios
-* habitaciones
-* clientes
-* reservas
-* pagos
-* empleados
+* **Controller:** expone los endpoints REST y recibe las solicitudes del cliente.
+* **Service:** contiene la lógica de negocio de cada módulo.
+* **Repository:** gestiona el acceso a la base de datos mediante JPA.
+* **Entity:** representa las entidades y tablas de la base de datos.
+* **DTO:** permite transferir información entre las diferentes capas.
+* **Security:** administra la autenticación y autorización mediante JWT.
+* **Exception:** centraliza el manejo de errores y excepciones.
 
 ---
 
-# Estado Actual del Proyecto
+## Organización del Repositorio
 
-Actualmente se cuenta con los siguientes avances:
+Para facilitar el trabajo colaborativo se implementó una estrategia de desarrollo basada en ramas de GitHub.
 
-* Proyecto inicializado con Spring Boot.
-* Dependencias principales configuradas.
-* Integración de JPA, Security, MySQL y Lombok.
-* Repositorio GitHub organizado con 12 ramas de trabajo.
+### Ramas principales
 
-Pendiente de implementación:
+* main
+* dev
 
-* Definición de entidades JPA.
-* Desarrollo de endpoints REST.
-* Configuración completa de JWT.
-* Conexión con la base de datos.
-* Documentación de la API mediante Swagger.
+### Ramas de desarrollo
+
+* f-AreasComunes
+* f-CRUDs
+* f-HabBack
+* f-confiback
+* f-configSQL
+* f-configpacks
+* f-endpoints
+* f-entidades
+* f-roles
+* f-swagger
+* f-tests
+* f-validaciones
+* feature/migracion-db
+
+Esta organización permitió desarrollar funcionalidades de forma independiente y posteriormente integrarlas al proyecto principal de manera controlada.
 
 ---
 
-# Próximas Actividades
+## Estado Actual del Proyecto
 
-Las siguientes tareas corresponden a la siguiente fase de desarrollo:
+### Funcionalidades implementadas
 
-1. Configurar la conexión a la base de datos mediante application.properties.
-2. Crear las entidades principales del sistema.
-3. Implementar la autenticación y autorización con JWT.
-4. Desarrollar los servicios y controladores de cada módulo.
-5. Realizar pruebas funcionales.
-6. Generar la documentación de la API con Swagger.
+* Configuración inicial del proyecto con Spring Boot.
+* Integración con PostgreSQL.
+* Implementación de Spring Security.
+* Autenticación mediante JWT.
+* Desarrollo de entidades principales.
+* Implementación de endpoints REST.
+* Configuración de Swagger para documentación.
+* Desarrollo de pruebas unitarias e integración.
+* Gestión de habitaciones, reservas y áreas comunes.
+* Implementación de control de acceso por roles.
 
+---
 
-Como ves el readmi ahora
+## Objetivo del Proyecto
+
+Desarrollar un sistema de gestión hotelera que permita administrar de manera eficiente habitaciones, reservas, usuarios y áreas comunes, brindando una plataforma segura, escalable y fácil de mantener mediante una arquitectura basada en API REST.
