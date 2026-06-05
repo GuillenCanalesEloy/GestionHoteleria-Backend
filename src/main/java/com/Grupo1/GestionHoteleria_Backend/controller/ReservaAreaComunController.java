@@ -35,6 +35,12 @@ public class ReservaAreaComunController {
 
 	private final ReservaAreaComunService reservaService;
 
+	@GetMapping
+	public ResponseEntity<List<ReservaAreaComunResponse>> findAll() {
+		List<ReservaAreaComun> reservas = reservaService.findAll();
+		return ResponseEntity.ok(reservas.stream().map(ReservaAreaComunResponse::fromEntity).toList());
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<ReservaAreaComunResponse> findById(@PathVariable Long id) {
 		ReservaAreaComun reserva = reservaService.findById(id);
@@ -73,10 +79,15 @@ public class ReservaAreaComunController {
 	@PostMapping
 	public ResponseEntity<ReservaAreaComunResponse> create(@Valid @RequestBody CreateReservaAreaComunRequest request,
 			Authentication authentication) {
-		Usuario usuario = (Usuario) authentication.getPrincipal();
+		Usuario currentUser = (Usuario) authentication.getPrincipal();
+
+		// Validar si es admin o si el ID enviado es igual al de la sesión
+		if (!currentUser.getRol().name().equals("ADMIN") && !currentUser.getId().equals(request.getUsuarioId())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
 
 		ReservaAreaComun reserva = reservaService.create(
-				usuario.getId(),
+				request.getUsuarioId(),
 				request.getAreaComunId(),
 				request.getFecha(),
 				request.getHoraInicio(),

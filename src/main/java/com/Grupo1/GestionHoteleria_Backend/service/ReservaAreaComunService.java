@@ -28,6 +28,11 @@ public class ReservaAreaComunService {
 	private final UsuarioRepository usuarioRepository;
 
 	@Transactional(readOnly = true)
+	public List<ReservaAreaComun> findAll() {
+		return reservaRepository.findAll();
+	}
+
+	@Transactional(readOnly = true)
 	public ReservaAreaComun findById(Long id) {
 		return reservaRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Reserva de área común no encontrada con id: " + id));
