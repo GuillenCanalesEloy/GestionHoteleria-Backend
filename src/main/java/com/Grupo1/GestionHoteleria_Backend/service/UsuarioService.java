@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.Grupo1.GestionHoteleria_Backend.entity.Rol;
 import com.Grupo1.GestionHoteleria_Backend.dto.CreateUsuarioRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateUsuarioRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.UsuarioResponse;
@@ -45,7 +46,7 @@ public class UsuarioService {
 				.nombre(request.nombre())
 				.email(request.email())
 				.password(passwordEncoder.encode(request.password()))
-				.rol(request.rol())
+				.rol(request.rol() != null ? request.rol() : Rol.CLIENTE)
 				.build();
 
 		return UsuarioResponse.fromEntity(usuarioRepository.save(usuario));
