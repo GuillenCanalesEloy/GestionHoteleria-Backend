@@ -1,5 +1,6 @@
 package com.Grupo1.GestionHoteleria_Backend.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -93,7 +94,11 @@ public class UsuarioService {
 			throw new UsuarioNotFoundException(id);
 		}
 
-		usuarioRepository.deleteById(id);
+		try {
+			usuarioRepository.deleteById(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityViolationException("No se puede eliminar el usuario porque tiene reservas asignadas.");
+		}
 	}
 
 	private Usuario findUsuarioById(Long id) {
