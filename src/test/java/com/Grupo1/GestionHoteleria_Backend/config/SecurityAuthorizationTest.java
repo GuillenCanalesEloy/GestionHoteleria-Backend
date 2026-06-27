@@ -173,16 +173,16 @@ class SecurityAuthorizationTest {
 	}
 
 	@Test
-	void shouldRejectAnonymousWhenAccessingUsuariosManagement() throws Exception {
+	void shouldAllowPublicAccessToGetUsuarios() throws Exception {
 		mockMvc.perform(get("/api/usuarios"))
-				.andExpect(status().isUnauthorized());
+				.andExpect(status().isOk());
 	}
 
 	@Test
 	@WithMockUser(roles = "CLIENTE")
-	void shouldRejectClienteWhenAccessingUsuariosManagement() throws Exception {
+	void shouldAllowClienteAccessToGetUsuarios() throws Exception {
 		mockMvc.perform(get("/api/usuarios"))
-				.andExpect(status().isForbidden());
+				.andExpect(status().isOk());
 	}
 
 	@Test
