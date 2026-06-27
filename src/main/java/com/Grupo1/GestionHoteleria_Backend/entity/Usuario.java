@@ -59,6 +59,15 @@ public class Usuario implements UserDetails {
 	@Column(nullable = false, length = 30)
 	private Rol rol = Rol.CLIENTE;
 
+	@Column(length = 20)
+	private String telefono;
+
+	@Column(length = 100)
+	private String ciudad;
+
+	@Column(columnDefinition = "TEXT")
+	private String notas;
+
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
@@ -90,5 +99,30 @@ public class Usuario implements UserDetails {
 	@Override
 	public String getUsername() {
 		return email;
+	}
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
 	}
 }

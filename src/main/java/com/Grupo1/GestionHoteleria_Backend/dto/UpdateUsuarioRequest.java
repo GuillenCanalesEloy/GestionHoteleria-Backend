@@ -16,6 +16,12 @@ public record UpdateUsuarioRequest(
 		@Size(min = 8, message = "La contrasena debe tener al menos 8 caracteres")
 		String password,
 
-		Rol rol
+		Rol rol,
+
+		@Size(max = 20, message = "El teléfono no debe superar 20 caracteres")
+		String telefono,
+		@Size(max = 100, message = "La ciudad no debe superar 100 caracteres")
+		String ciudad,
+		String notas
 ) {
 }

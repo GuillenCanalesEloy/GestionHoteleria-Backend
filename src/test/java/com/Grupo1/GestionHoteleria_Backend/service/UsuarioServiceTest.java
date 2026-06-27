@@ -59,7 +59,7 @@ class UsuarioServiceTest {
 
 	@Test
 	void shouldCreateUserWithEncryptedPassword() {
-		CreateUsuarioRequest request = new CreateUsuarioRequest("Admin", "admin@correo.com", "12345678", Rol.ADMIN);
+		CreateUsuarioRequest request = new CreateUsuarioRequest("Admin", "admin@correo.com", "12345678", Rol.ADMIN, null, null, null);
 
 		when(usuarioRepository.existsByEmail("admin@correo.com")).thenReturn(false);
 		when(passwordEncoder.encode("12345678")).thenReturn("password-encriptado");
@@ -79,7 +79,7 @@ class UsuarioServiceTest {
 
 	@Test
 	void shouldRejectCreateWhenEmailAlreadyExists() {
-		CreateUsuarioRequest request = new CreateUsuarioRequest("Admin", "admin@correo.com", "12345678", Rol.ADMIN);
+		CreateUsuarioRequest request = new CreateUsuarioRequest("Admin", "admin@correo.com", "12345678", Rol.ADMIN, null, null, null);
 
 		when(usuarioRepository.existsByEmail("admin@correo.com")).thenReturn(true);
 
@@ -93,7 +93,7 @@ class UsuarioServiceTest {
 	@Test
 	void shouldUpdateUserPartially() {
 		Usuario usuario = buildUsuario(1L, "Cliente", "cliente@correo.com", Rol.CLIENTE);
-		UpdateUsuarioRequest request = new UpdateUsuarioRequest("Admin Editado", "admin@correo.com", "87654321", Rol.ADMIN);
+		UpdateUsuarioRequest request = new UpdateUsuarioRequest("Admin Editado", "admin@correo.com", "87654321", Rol.ADMIN, null, null, null);
 
 		when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 		when(usuarioRepository.existsByEmailAndIdNot("admin@correo.com", 1L)).thenReturn(false);
@@ -111,7 +111,7 @@ class UsuarioServiceTest {
 	@Test
 	void shouldRejectUpdateWhenEmailBelongsToAnotherUser() {
 		Usuario usuario = buildUsuario(1L, "Cliente", "cliente@correo.com", Rol.CLIENTE);
-		UpdateUsuarioRequest request = new UpdateUsuarioRequest(null, "admin@correo.com", null, null);
+		UpdateUsuarioRequest request = new UpdateUsuarioRequest(null, "admin@correo.com", null, null, null, null, null);
 
 		when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 		when(usuarioRepository.existsByEmailAndIdNot("admin@correo.com", 1L)).thenReturn(true);

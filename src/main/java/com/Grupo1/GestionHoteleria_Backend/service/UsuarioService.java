@@ -47,6 +47,9 @@ public class UsuarioService {
 				.email(request.email())
 				.password(passwordEncoder.encode(request.password()))
 				.rol(request.rol() != null ? request.rol() : Rol.CLIENTE)
+				.telefono(request.telefono())
+				.ciudad(request.ciudad())
+				.notas(request.notas())
 				.build();
 
 		return UsuarioResponse.fromEntity(usuarioRepository.save(usuario));
@@ -70,6 +73,15 @@ public class UsuarioService {
 		}
 		if (request.rol() != null) {
 			usuario.setRol(request.rol());
+		}
+		if (request.telefono() != null) {
+			usuario.setTelefono(request.telefono());
+		}
+		if (request.ciudad() != null) {
+			usuario.setCiudad(request.ciudad());
+		}
+		if (request.notas() != null) {
+			usuario.setNotas(request.notas());
 		}
 
 		return UsuarioResponse.fromEntity(usuarioRepository.save(usuario));

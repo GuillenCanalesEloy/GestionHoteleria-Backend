@@ -46,7 +46,7 @@ class UsuarioControllerTest {
 	void shouldListUsers() throws Exception {
 		when(usuarioService.findAll()).thenReturn(List.of(buildResponse(1L, "Admin", "admin@correo.com", Rol.ADMIN)));
 
-		mockMvc.perform(get("/api/usuarios"))
+		mockMvc.perform(get("/api/clientes"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].id").value(1))
 				.andExpect(jsonPath("$[0].nombre").value("Admin"))
@@ -59,7 +59,7 @@ class UsuarioControllerTest {
 	void shouldFindUserById() throws Exception {
 		when(usuarioService.findById(1L)).thenReturn(buildResponse(1L, "Cliente", "cliente@correo.com", Rol.CLIENTE));
 
-		mockMvc.perform(get("/api/usuarios/1"))
+		mockMvc.perform(get("/api/clientes/1"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id").value(1))
 				.andExpect(jsonPath("$.email").value("cliente@correo.com"))
@@ -71,13 +71,13 @@ class UsuarioControllerTest {
 	void shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
 		when(usuarioService.findById(99L)).thenThrow(new UsuarioNotFoundException(99L));
 
-		mockMvc.perform(get("/api/usuarios/99"))
+		mockMvc.perform(get("/api/clientes/99"))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.timestamp").exists())
 				.andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.error").value("Not Found"))
 				.andExpect(jsonPath("$.message").value("Usuario no encontrado con id: 99"))
-				.andExpect(jsonPath("$.path").value("/api/usuarios/99"));
+				.andExpect(jsonPath("$.path").value("/api/clientes/99"));
 	}
 
 	@Test
@@ -85,7 +85,7 @@ class UsuarioControllerTest {
 		when(usuarioService.create(any(CreateUsuarioRequest.class)))
 				.thenReturn(buildResponse(10L, "Admin Nuevo", "admin@correo.com", Rol.ADMIN));
 
-		mockMvc.perform(post("/api/usuarios")
+		mockMvc.perform(post("/api/clientes")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -106,7 +106,7 @@ class UsuarioControllerTest {
 		when(usuarioService.update(eq(1L), any(UpdateUsuarioRequest.class)))
 				.thenReturn(buildResponse(1L, "Admin Editado", "admin@correo.com", Rol.ADMIN));
 
-		mockMvc.perform(put("/api/usuarios/1")
+		mockMvc.perform(put("/api/clientes/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -125,7 +125,7 @@ class UsuarioControllerTest {
 		when(usuarioService.update(eq(1L), any(UpdateUsuarioRequest.class)))
 				.thenReturn(buildResponse(1L, "Cliente Editado", "cliente@correo.com", Rol.CLIENTE));
 
-		mockMvc.perform(patch("/api/usuarios/1")
+		mockMvc.perform(patch("/api/clientes/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -139,7 +139,7 @@ class UsuarioControllerTest {
 
 	@Test
 	void shouldDeleteUser() throws Exception {
-		mockMvc.perform(delete("/api/usuarios/1"))
+		mockMvc.perform(delete("/api/clientes/1"))
 				.andExpect(status().isNoContent());
 
 		verify(usuarioService).delete(1L);
@@ -149,12 +149,12 @@ class UsuarioControllerTest {
 	void shouldReturnNotFoundWhenDeletingMissingUser() throws Exception {
 		org.mockito.Mockito.doThrow(new UsuarioNotFoundException(99L)).when(usuarioService).delete(99L);
 
-		mockMvc.perform(delete("/api/usuarios/99"))
+		mockMvc.perform(delete("/api/clientes/99"))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.error").value("Not Found"))
 				.andExpect(jsonPath("$.message").value("Usuario no encontrado con id: 99"))
-				.andExpect(jsonPath("$.path").value("/api/usuarios/99"));
+				.andExpect(jsonPath("$.path").value("/api/clientes/99"));
 	}
 
 	private UsuarioResponse buildResponse(Long id, String nombre, String email, Rol rol) {
@@ -163,6 +163,9 @@ class UsuarioControllerTest {
 				nombre,
 				email,
 				rol,
+				null,
+				null,
+				null,
 				LocalDateTime.of(2026, 5, 19, 10, 0),
 				LocalDateTime.of(2026, 5, 19, 11, 0)
 		);
