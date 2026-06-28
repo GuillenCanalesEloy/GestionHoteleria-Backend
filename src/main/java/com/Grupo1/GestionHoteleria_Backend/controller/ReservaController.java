@@ -73,6 +73,34 @@ public class ReservaController {
 		return ResponseEntity.ok(response);
 	}
 
+	@GetMapping("/cliente/{clienteId}")
+	public ResponseEntity<PageResponse<ReservaResponse>> findByClienteId(
+			@PathVariable Long clienteId,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "fechaEntrada") String sortBy,
+			@RequestParam(defaultValue = "DESC") String direction,
+			Authentication authentication
+	) {
+		Usuario currentUser = currentUser(authentication);
+
+		if (!isAdmin(currentUser) && !currentUser.getId().equals(clienteId)) {
+			throw new AccessDeniedException("No tienes permisos para ver reservas de otro cliente");
+		}
+
+		return ResponseEntity.ok(reservaService.findAll(
+				clienteId,
+				null,
+				null,
+				null,
+				null,
+				page,
+				size,
+				sortBy,
+				direction
+		));
+	}
+
 	@PostMapping
 	public ResponseEntity<ReservaResponse> create(
 			@Valid @RequestBody CreateReservaRequest request,
