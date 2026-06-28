@@ -1,11 +1,13 @@
 package com.Grupo1.GestionHoteleria_Backend.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.Grupo1.GestionHoteleria_Backend.entity.Rol;
 import com.Grupo1.GestionHoteleria_Backend.dto.CreateUsuarioRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateUsuarioRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.UsuarioResponse;
@@ -45,7 +47,10 @@ public class UsuarioService {
 				.nombre(request.nombre())
 				.email(request.email())
 				.password(passwordEncoder.encode(request.password()))
-				.rol(request.rol())
+				.rol(request.rol() != null ? request.rol() : Rol.CLIENTE)
+				.telefono(request.telefono())
+				.ciudad(request.ciudad())
+				.notas(request.notas())
 				.build();
 
 		return UsuarioResponse.fromEntity(usuarioRepository.save(usuario));
@@ -70,6 +75,15 @@ public class UsuarioService {
 		if (request.rol() != null) {
 			usuario.setRol(request.rol());
 		}
+		if (request.telefono() != null) {
+			usuario.setTelefono(request.telefono());
+		}
+		if (request.ciudad() != null) {
+			usuario.setCiudad(request.ciudad());
+		}
+		if (request.notas() != null) {
+			usuario.setNotas(request.notas());
+		}
 
 		return UsuarioResponse.fromEntity(usuarioRepository.save(usuario));
 	}
@@ -80,7 +94,11 @@ public class UsuarioService {
 			throw new UsuarioNotFoundException(id);
 		}
 
-		usuarioRepository.deleteById(id);
+		try {
+			usuarioRepository.deleteById(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityViolationException("No se puede eliminar el usuario porque tiene reservas asignadas.");
+		}
 	}
 
 	private Usuario findUsuarioById(Long id) {
