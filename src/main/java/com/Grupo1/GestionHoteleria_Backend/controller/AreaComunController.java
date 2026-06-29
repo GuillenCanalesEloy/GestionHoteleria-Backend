@@ -56,6 +56,7 @@ public class AreaComunController {
 				.descripcion(request.getDescripcion())
 				.capacidadMaxima(request.getCapacidadMaxima())
 				.precioPorHora(request.getPrecioPorHora())
+				.imagenUrl(request.getImagenUrl())
 				.estado(EstadoAreaComun.DISPONIBLE)
 				.build();
 		AreaComun created = areaComunService.create(areaComun);
@@ -71,6 +72,7 @@ public class AreaComunController {
 				.descripcion(request.getDescripcion())
 				.capacidadMaxima(request.getCapacidadMaxima())
 				.precioPorHora(request.getPrecioPorHora())
+				.imagenUrl(request.getImagenUrl())
 				.build();
 		AreaComun updated = areaComunService.update(id, areaComun);
 		return ResponseEntity.ok(AreaComunResponse.fromEntity(updated));

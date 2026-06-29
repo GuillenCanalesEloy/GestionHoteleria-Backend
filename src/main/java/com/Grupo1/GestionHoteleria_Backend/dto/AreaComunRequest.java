@@ -34,4 +34,6 @@ public class AreaComunRequest {
 	@NotNull(message = "El precio por hora es requerido")
 	@DecimalMin(value = "0.01", message = "El precio por hora debe ser mayor a 0")
 	private BigDecimal precioPorHora;
+
+	private String imagenUrl;
 }

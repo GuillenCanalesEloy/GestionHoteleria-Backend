@@ -54,7 +54,7 @@ public class AreaComunService {
 		existing.setDescripcion(areaComun.getDescripcion());
 		existing.setCapacidadMaxima(areaComun.getCapacidadMaxima());
 		existing.setPrecioPorHora(areaComun.getPrecioPorHora());
-		existing.setEstado(areaComun.getEstado());
+		existing.setImagenUrl(areaComun.getImagenUrl());
 		return areaComunRepository.save(existing);
 	}
 
