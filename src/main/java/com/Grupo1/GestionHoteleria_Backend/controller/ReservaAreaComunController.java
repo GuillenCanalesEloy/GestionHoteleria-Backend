@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ public class ReservaAreaComunController {
 	private final ReservaAreaComunService reservaService;
 
 	@GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<ReservaAreaComunResponse>> findAll() {
 		List<ReservaAreaComun> reservas = reservaService.findAll();
 		return ResponseEntity.ok(reservas.stream().map(ReservaAreaComunResponse::fromEntity).toList());
