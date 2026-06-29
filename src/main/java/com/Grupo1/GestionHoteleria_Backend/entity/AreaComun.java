@@ -51,6 +51,9 @@ public class AreaComun {
 	@Column(name = "precio_por_hora", nullable = false, precision = 10, scale = 2)
 	private BigDecimal precioPorHora;
 
+	@Column(name = "imagen_url", length = 2048)
+	private String imagenUrl;
+
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 30)

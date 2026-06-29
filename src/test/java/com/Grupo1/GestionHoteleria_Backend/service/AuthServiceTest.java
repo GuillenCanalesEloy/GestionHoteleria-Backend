@@ -60,6 +60,7 @@ class AuthServiceTest {
 	void shouldAuthenticateUserAndReturnJwt() {
 		LoginRequest request = new LoginRequest("demo@correo.com", "12345678");
 		Usuario usuario = Usuario.builder()
+				.id(1L)
 				.nombre("Usuario Demo")
 				.email("demo@correo.com")
 				.password("password-encriptado")
@@ -74,6 +75,7 @@ class AuthServiceTest {
 		verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
 		verify(loginLogRepository).save(any(LoginLog.class));
 		assertThat(response.token()).isEqualTo("jwt-generado");
+		assertThat(response.id()).isEqualTo(1L);
 		assertThat(response.type()).isEqualTo("Bearer");
 		assertThat(response.email()).isEqualTo("demo@correo.com");
 		assertThat(response.nombre()).isEqualTo("Usuario Demo");
@@ -95,6 +97,7 @@ class AuthServiceTest {
 		verify(usuarioRepository).save(any(Usuario.class));
 		verify(registerLogRepository).save(any(RegisterLog.class));
 		assertThat(response.token()).isEqualTo("jwt-nuevo");
+		assertThat(response.id()).isNull();
 		assertThat(response.type()).isEqualTo("Bearer");
 		assertThat(response.email()).isEqualTo("nuevo@correo.com");
 		assertThat(response.nombre()).isEqualTo("Nuevo Usuario");

@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
 	private static final String[] AUTH_WHITELIST = {
@@ -74,6 +76,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers(AUTH_WHITELIST).permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/habitaciones/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/areas-comunes/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/usuarios/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasRole("ADMIN")
 						.requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole("ADMIN")
@@ -84,7 +87,11 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.PUT, "/api/habitaciones/**").hasRole("ADMIN")
 						.requestMatchers(HttpMethod.PATCH, "/api/habitaciones/**").hasRole("ADMIN")
 						.requestMatchers(HttpMethod.DELETE, "/api/habitaciones/**").hasRole("ADMIN")
-						.requestMatchers("/api/reservas/**", "/api/pagos/**").hasAnyRole("ADMIN", "CLIENTE")
+						.requestMatchers(
+								"/api/reservas/**",
+								"/api/reservas-areas-comunes/**",
+								"/api/pagos/**"
+						).hasAnyRole("ADMIN", "CLIENTE")
 						.anyRequest().authenticated()
 				)
 				.authenticationProvider(authenticationProvider())
@@ -112,7 +119,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of(frontendUrl));
+		configuration.setAllowedOrigins(List.of(frontendUrl, "http://127.0.0.1:5173"));
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
 		configuration.setExposedHeaders(List.of("Authorization"));

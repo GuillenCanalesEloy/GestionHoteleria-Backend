@@ -24,6 +24,7 @@ public class AreaComunResponse {
 	private String descripcion;
 	private Integer capacidadMaxima;
 	private BigDecimal precioPorHora;
+	private String imagenUrl;
 	private EstadoAreaComun estado;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -35,6 +36,7 @@ public class AreaComunResponse {
 				.descripcion(entity.getDescripcion())
 				.capacidadMaxima(entity.getCapacidadMaxima())
 				.precioPorHora(entity.getPrecioPorHora())
+				.imagenUrl(entity.getImagenUrl())
 				.estado(entity.getEstado())
 				.createdAt(entity.getCreatedAt())
 				.updatedAt(entity.getUpdatedAt())

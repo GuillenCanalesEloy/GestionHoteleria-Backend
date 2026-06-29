@@ -30,6 +30,7 @@ class AuthControllerTest {
 	@Test
 	void shouldLoginAndReturnAuthResponse() throws Exception {
 		when(authService.login(any())).thenReturn(new AuthResponse(
+				1L,
 				"jwt-generado",
 				"Bearer",
 				"demo@correo.com",
@@ -46,6 +47,7 @@ class AuthControllerTest {
 								}
 								"""))
 				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(1))
 				.andExpect(jsonPath("$.token").value("jwt-generado"))
 				.andExpect(jsonPath("$.type").value("Bearer"))
 				.andExpect(jsonPath("$.email").value("demo@correo.com"))
@@ -56,6 +58,7 @@ class AuthControllerTest {
 	@Test
 	void shouldRegisterAndReturnCreatedAuthResponse() throws Exception {
 		when(authService.register(any())).thenReturn(new AuthResponse(
+				2L,
 				"jwt-nuevo",
 				"Bearer",
 				"nuevo@correo.com",
@@ -73,6 +76,7 @@ class AuthControllerTest {
 								}
 								"""))
 				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").value(2))
 				.andExpect(jsonPath("$.token").value("jwt-nuevo"))
 				.andExpect(jsonPath("$.type").value("Bearer"))
 				.andExpect(jsonPath("$.email").value("nuevo@correo.com"))
