@@ -74,6 +74,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers(AUTH_WHITELIST).permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/habitaciones/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/areas-comunes/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/usuarios/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasRole("ADMIN")
 						.requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole("ADMIN")
