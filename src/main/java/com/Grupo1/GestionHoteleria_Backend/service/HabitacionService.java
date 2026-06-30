@@ -128,6 +128,7 @@ public class HabitacionService {
 				.capacidad(request.capacidad())
 				.precioPorNoche(request.precioPorNoche())
 				.descripcion(request.descripcion())
+				.imagenUrl(request.imagenUrl())
 				.build();
 
 		return HabitacionResponse.fromEntity(habitacionRepository.save(habitacion));
@@ -160,6 +161,9 @@ public class HabitacionService {
 		}
 		if (request.descripcion() != null) {
 			habitacion.setDescripcion(request.descripcion());
+		}
+		if (request.imagenUrl() != null) {
+			habitacion.setImagenUrl(request.imagenUrl());
 		}
 
 		return HabitacionResponse.fromEntity(habitacionRepository.save(habitacion));

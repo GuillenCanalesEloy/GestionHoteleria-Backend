@@ -16,6 +16,7 @@ public record HabitacionResponse(
 		Integer capacidad,
 		BigDecimal precioPorNoche,
 		String descripcion,
+		String imagenUrl,
 		LocalDateTime createdAt,
 		LocalDateTime updatedAt
 ) {
@@ -30,6 +31,7 @@ public record HabitacionResponse(
 				habitacion.getCapacidad(),
 				habitacion.getPrecioPorNoche(),
 				habitacion.getDescripcion(),
+				habitacion.getImagenUrl(),
 				habitacion.getCreatedAt(),
 				habitacion.getUpdatedAt()
 		);

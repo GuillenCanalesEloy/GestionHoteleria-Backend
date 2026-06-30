@@ -69,6 +69,9 @@ public class Habitacion {
 	@Column(length = 500)
 	private String descripcion;
 
+	@Column(name = "imagen_url", length = 2048)
+	private String imagenUrl;
+
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 

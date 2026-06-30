@@ -29,6 +29,9 @@ public record UpdateHabitacionRequest(
 		BigDecimal precioPorNoche,
 
 		@Size(max = 500, message = "La descripcion no debe superar 500 caracteres")
-		String descripcion
+		String descripcion,
+
+		@Size(max = 2048, message = "La URL de la imagen no debe superar 2048 caracteres")
+		String imagenUrl
 ) {
 }
