@@ -3,8 +3,8 @@ package com.Grupo1.GestionHoteleria_Backend.controller;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -64,6 +64,34 @@ public class HabitacionController {
 		));
 	}
 
+	@GetMapping("/disponibles")
+	public ResponseEntity<PageResponse<HabitacionResponse>> findDisponibles(
+			@RequestParam(required = false) TipoHabitacion tipo,
+			@RequestParam(required = false) Integer capacidadMin,
+			@RequestParam(required = false) BigDecimal precioMin,
+			@RequestParam(required = false) BigDecimal precioMax,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaEntrada,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaSalida,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "id") String sortBy,
+			@RequestParam(defaultValue = "ASC") String direction
+	) {
+		return ResponseEntity.ok(habitacionService.findAll(
+				tipo,
+				EstadoHabitacion.DISPONIBLE,
+				capacidadMin,
+				precioMin,
+				precioMax,
+				fechaEntrada,
+				fechaSalida,
+				page,
+				size,
+				sortBy,
+				direction
+		));
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<HabitacionResponse> findById(@PathVariable Long id) {
 		return ResponseEntity.ok(habitacionService.findById(id));
@@ -82,12 +110,18 @@ public class HabitacionController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<HabitacionResponse> update(@PathVariable Long id, @Valid @RequestBody UpdateHabitacionRequest request) {
+	public ResponseEntity<HabitacionResponse> update(
+			@PathVariable Long id,
+			@Valid @RequestBody UpdateHabitacionRequest request
+	) {
 		return ResponseEntity.ok(habitacionService.update(id, request));
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<HabitacionResponse> patch(@PathVariable Long id, @Valid @RequestBody UpdateHabitacionRequest request) {
+	public ResponseEntity<HabitacionResponse> patch(
+			@PathVariable Long id,
+			@Valid @RequestBody UpdateHabitacionRequest request
+	) {
 		return ResponseEntity.ok(habitacionService.update(id, request));
 	}
 
