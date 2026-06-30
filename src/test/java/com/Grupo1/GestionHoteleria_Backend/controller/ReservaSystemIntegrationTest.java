@@ -207,6 +207,43 @@ class ReservaSystemIntegrationTest {
 				.andExpect(jsonPath("$.estado").value("CANCELADA"));
 	}
 
+	@Test
+	void shouldCompleteSimulatedPaymentFlowAsCliente() throws Exception {
+		MvcResult createResult = mockMvc.perform(post("/api/reservas")
+						.header(HttpHeaders.AUTHORIZATION, bearer(cliente))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "usuarioId": %d,
+								  "habitacionId": %d,
+								  "fechaEntrada": "2026-12-10",
+								  "fechaSalida": "2026-12-12",
+								  "cantidadHuespedes": 2
+								}
+								""".formatted(cliente.getId(), habitacion.getId())))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.estado").value("PENDIENTE"))
+				.andReturn();
+
+		Long reservaId = responseId(createResult);
+
+		mockMvc.perform(post("/api/reservas/{id}/confirmar-pago-simulado", reservaId)
+						.header(HttpHeaders.AUTHORIZATION, bearer(cliente)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(reservaId))
+				.andExpect(jsonPath("$.estado").value("CONFIRMADA"));
+
+		mockMvc.perform(get("/api/reservas")
+						.header(HttpHeaders.AUTHORIZATION, bearer(cliente)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.totalElements").value(1))
+				.andExpect(jsonPath("$.content[0].id").value(reservaId))
+				.andExpect(jsonPath("$.content[0].estado").value("CONFIRMADA"))
+				.andExpect(jsonPath("$.content[0].habitacionNumero").value(habitacion.getNumero()))
+				.andExpect(jsonPath("$.content[0].cantidadHuespedes").value(2))
+				.andExpect(jsonPath("$.content[0].precioTotal").value(360.00));
+	}
+
 	private String bearer(Usuario usuario) {
 		return "Bearer " + jwtService.generateToken(usuario);
 	}
