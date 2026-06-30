@@ -432,6 +432,7 @@ class HabitacionControllerTest {
 				1,
 				new BigDecimal("120.00"),
 				"Habitacion de prueba",
+				null,
 				LocalDateTime.of(2026, 5, 19, 10, 0),
 				LocalDateTime.of(2026, 5, 19, 11, 0)
 		);

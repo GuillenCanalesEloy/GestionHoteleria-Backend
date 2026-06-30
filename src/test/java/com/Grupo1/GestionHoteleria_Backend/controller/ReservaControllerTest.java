@@ -372,6 +372,7 @@ class ReservaControllerTest {
 				20L,
 				"101",
 				TipoHabitacion.DOBLE,
+				null,
 				LocalDate.of(2026, 8, 10),
 				LocalDate.of(2026, 8, 12),
 				2,

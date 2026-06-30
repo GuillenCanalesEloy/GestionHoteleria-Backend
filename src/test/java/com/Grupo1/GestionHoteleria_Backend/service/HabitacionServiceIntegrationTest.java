@@ -142,7 +142,8 @@ class HabitacionServiceIntegrationTest {
 				null,
 				2,
 				new BigDecimal("220.00"),
-				"Habitacion matrimonial"
+				"Habitacion matrimonial",
+				null
 		);
 
 		HabitacionResponse response = habitacionService.create(request);
@@ -165,6 +166,7 @@ class HabitacionServiceIntegrationTest {
 				EstadoHabitacion.DISPONIBLE,
 				1,
 				new BigDecimal("90.00"),
+				null,
 				null
 		);
 
@@ -183,7 +185,8 @@ class HabitacionServiceIntegrationTest {
 				EstadoHabitacion.MANTENIMIENTO,
 				4,
 				new BigDecimal("320.00"),
-				"Habitacion familiar actualizada"
+				"Habitacion familiar actualizada",
+				null
 		);
 
 		HabitacionResponse response = habitacionService.update(habitacion.getId(), request);
@@ -209,6 +212,7 @@ class HabitacionServiceIntegrationTest {
 				EstadoHabitacion.OCUPADA,
 				null,
 				null,
+				null,
 				null
 		);
 
@@ -225,6 +229,7 @@ class HabitacionServiceIntegrationTest {
 		Habitacion habitacion = habitacionRepository.findByNumero("201").orElseThrow();
 		UpdateHabitacionRequest request = new UpdateHabitacionRequest(
 				"101",
+				null,
 				null,
 				null,
 				null,

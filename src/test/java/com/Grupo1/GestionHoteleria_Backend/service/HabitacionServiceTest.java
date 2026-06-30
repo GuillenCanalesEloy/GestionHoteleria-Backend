@@ -242,7 +242,8 @@ class HabitacionServiceTest {
 				null,
 				1,
 				new BigDecimal("120.00"),
-				"Habitacion simple"
+				"Habitacion simple",
+				null
 		);
 
 		when(habitacionRepository.existsByNumero("101")).thenReturn(false);
@@ -269,6 +270,7 @@ class HabitacionServiceTest {
 				EstadoHabitacion.DISPONIBLE,
 				1,
 				new BigDecimal("120.00"),
+				null,
 				null
 		);
 
@@ -291,7 +293,8 @@ class HabitacionServiceTest {
 				EstadoHabitacion.MANTENIMIENTO,
 				2,
 				new BigDecimal("180.00"),
-				"Habitacion actualizada"
+				"Habitacion actualizada",
+				null
 		);
 
 		when(habitacionRepository.findById(1L)).thenReturn(Optional.of(habitacion));
@@ -312,7 +315,7 @@ class HabitacionServiceTest {
 	@Test
 	void shouldRejectUpdateWhenNumeroBelongsToAnotherHabitacion() {
 		Habitacion habitacion = buildHabitacion(1L, "101", EstadoHabitacion.DISPONIBLE);
-		UpdateHabitacionRequest request = new UpdateHabitacionRequest("102", null, null, null, null, null, null);
+		UpdateHabitacionRequest request = new UpdateHabitacionRequest("102", null, null, null, null, null, null, null);
 
 		when(habitacionRepository.findById(1L)).thenReturn(Optional.of(habitacion));
 		when(habitacionRepository.existsByNumeroAndIdNot("102", 1L)).thenReturn(true);

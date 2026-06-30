@@ -191,6 +191,7 @@ class DashboardControllerTest {
 				2L,
 				"201",
 				TipoHabitacion.DOBLE,
+				null,
 				LocalDate.of(2026, 9, 10),
 				LocalDate.of(2026, 9, 12),
 				2,
