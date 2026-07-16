@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,14 +17,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.Grupo1.GestionHoteleria_Backend.dto.CreateHabitacionRequest;
+import com.Grupo1.GestionHoteleria_Backend.dto.CreateHabitacionFormRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.HabitacionResponse;
 import com.Grupo1.GestionHoteleria_Backend.dto.PageResponse;
+import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionFormRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.UpdateHabitacionRequest;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
+import com.Grupo1.GestionHoteleria_Backend.service.FileStorageService;
 import com.Grupo1.GestionHoteleria_Backend.service.HabitacionService;
 
 import jakarta.validation.Valid;
@@ -34,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class HabitacionController {
 
 	private final HabitacionService habitacionService;
+	private final FileStorageService fileStorageService;
 
 	@GetMapping
 	public ResponseEntity<PageResponse<HabitacionResponse>> findAll(
@@ -109,6 +116,20 @@ public class HabitacionController {
 				.body(response);
 	}
 
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<HabitacionResponse> createWithImage(
+			@Valid @ModelAttribute CreateHabitacionFormRequest request,
+			@RequestParam(required = false) MultipartFile imagen,
+			UriComponentsBuilder uriBuilder
+	) {
+		String imagenUrl = fileStorageService.storeHabitacionImage(imagen);
+		HabitacionResponse response = habitacionService.create(request.toRequest(imagenUrl));
+
+		return ResponseEntity
+				.created(uriBuilder.path("/api/habitaciones/{id}").buildAndExpand(response.id()).toUri())
+				.body(response);
+	}
+
 	@PutMapping("/{id}")
 	public ResponseEntity<HabitacionResponse> update(
 			@PathVariable Long id,
@@ -117,12 +138,32 @@ public class HabitacionController {
 		return ResponseEntity.ok(habitacionService.update(id, request));
 	}
 
+	@PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<HabitacionResponse> updateWithImage(
+			@PathVariable Long id,
+			@Valid @ModelAttribute UpdateHabitacionFormRequest request,
+			@RequestParam(required = false) MultipartFile imagen
+	) {
+		String imagenUrl = fileStorageService.storeHabitacionImage(imagen);
+		return ResponseEntity.ok(habitacionService.update(id, request.toRequest(imagenUrl)));
+	}
+
 	@PatchMapping("/{id}")
 	public ResponseEntity<HabitacionResponse> patch(
 			@PathVariable Long id,
 			@Valid @RequestBody UpdateHabitacionRequest request
 	) {
 		return ResponseEntity.ok(habitacionService.update(id, request));
+	}
+
+	@PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<HabitacionResponse> patchWithImage(
+			@PathVariable Long id,
+			@Valid @ModelAttribute UpdateHabitacionFormRequest request,
+			@RequestParam(required = false) MultipartFile imagen
+	) {
+		String imagenUrl = fileStorageService.storeHabitacionImage(imagen);
+		return ResponseEntity.ok(habitacionService.update(id, request.toRequest(imagenUrl)));
 	}
 
 	@DeleteMapping("/{id}")

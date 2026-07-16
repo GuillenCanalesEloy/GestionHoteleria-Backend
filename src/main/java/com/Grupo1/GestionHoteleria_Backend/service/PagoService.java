@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.Grupo1.GestionHoteleria_Backend.dto.CreatePagoRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.PagoResponse;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoPago;
+import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Pago;
 import com.Grupo1.GestionHoteleria_Backend.entity.Reserva;
 import com.Grupo1.GestionHoteleria_Backend.exception.PagoNotFoundException;
@@ -69,6 +70,10 @@ public class PagoService {
 				.codigoOperacion(generateCodigoOperacion())
 				.fechaPago(LocalDateTime.now())
 				.build();
+
+		if (EstadoPago.APROBADO.equals(estado)) {
+			reserva.setEstado(EstadoReserva.CONFIRMADA);
+		}
 
 		return PagoResponse.fromEntity(pagoRepository.save(pago));
 	}

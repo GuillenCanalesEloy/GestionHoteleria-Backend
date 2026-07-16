@@ -44,7 +44,8 @@ public class SecurityConfig {
 			"/swagger-ui/**",
             "/swagger-ui.html",
             "/v3/api-docs/**",
-            "/api-docs/**"
+            "/api-docs/**",
+			"/uploads/habitaciones/**"
 	};
 
 	private static final String[] ADMIN_ENDPOINTS = {

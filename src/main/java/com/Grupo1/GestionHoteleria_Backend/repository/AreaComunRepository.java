@@ -18,7 +18,7 @@ public interface AreaComunRepository extends JpaRepository<AreaComun, Long> {
 
 	@Query("""
 			select ac from AreaComun ac
-			where ac.estado = com.Grupo1.GestionHoteleria_Backend.entity.EstadoAreaComun.DISPONIBLE
+			where ac.estado <> com.Grupo1.GestionHoteleria_Backend.entity.EstadoAreaComun.MANTENIMIENTO
 			order by ac.nombre
 			""")
 	List<AreaComun> findAllDisponibles();

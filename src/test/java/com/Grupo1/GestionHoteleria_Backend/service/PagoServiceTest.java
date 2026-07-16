@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import com.Grupo1.GestionHoteleria_Backend.dto.CreatePagoRequest;
 import com.Grupo1.GestionHoteleria_Backend.dto.PagoResponse;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoPago;
+import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.Habitacion;
 import com.Grupo1.GestionHoteleria_Backend.entity.MetodoPago;
 import com.Grupo1.GestionHoteleria_Backend.entity.Pago;
@@ -59,6 +60,7 @@ class PagoServiceTest {
 		assertThat(response.estado()).isEqualTo(EstadoPago.APROBADO);
 		assertThat(response.codigoOperacion()).startsWith("SIM-");
 		assertThat(response.fechaPago()).isNotNull();
+		assertThat(reserva.getEstado()).isEqualTo(EstadoReserva.CONFIRMADA);
 		verify(pagoRepository).save(any(Pago.class));
 	}
 
@@ -72,6 +74,7 @@ class PagoServiceTest {
 
 		assertThat(response.estado()).isEqualTo(EstadoPago.RECHAZADO);
 		assertThat(response.metodoPago()).isEqualTo(MetodoPago.PAYPAL);
+		assertThat(reserva.getEstado()).isEqualTo(EstadoReserva.PENDIENTE);
 	}
 
 	@Test

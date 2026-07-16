@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -34,17 +36,20 @@ import com.Grupo1.GestionHoteleria_Backend.entity.TipoHabitacion;
 import com.Grupo1.GestionHoteleria_Backend.exception.GlobalExceptionHandler;
 import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNotFoundException;
 import com.Grupo1.GestionHoteleria_Backend.exception.HabitacionNumeroAlreadyExistsException;
+import com.Grupo1.GestionHoteleria_Backend.service.FileStorageService;
 import com.Grupo1.GestionHoteleria_Backend.service.HabitacionService;
 
 class HabitacionControllerTest {
 
 	private HabitacionService habitacionService;
+	private FileStorageService fileStorageService;
 	private MockMvc mockMvc;
 
 	@BeforeEach
 	void setUp() {
 		habitacionService = org.mockito.Mockito.mock(HabitacionService.class);
-		mockMvc = MockMvcBuilders.standaloneSetup(new HabitacionController(habitacionService))
+		fileStorageService = org.mockito.Mockito.mock(FileStorageService.class);
+		mockMvc = MockMvcBuilders.standaloneSetup(new HabitacionController(habitacionService, fileStorageService))
 				.setControllerAdvice(new GlobalExceptionHandler())
 				.build();
 	}
@@ -221,6 +226,35 @@ class HabitacionControllerTest {
 				.andExpect(jsonPath("$.id").value(10))
 				.andExpect(jsonPath("$.numero").value("201"))
 				.andExpect(jsonPath("$.tipo").value("DOBLE"));
+	}
+
+	@Test
+	void shouldCreateHabitacionWithUploadedImage() throws Exception {
+		MockMultipartFile imagen = new MockMultipartFile(
+				"imagen",
+				"habitacion.png",
+				"image/png",
+				"fake-image".getBytes()
+		);
+
+		when(fileStorageService.storeHabitacionImage(imagen)).thenReturn("/uploads/habitaciones/habitacion.png");
+		when(habitacionService.create(any(CreateHabitacionRequest.class)))
+				.thenReturn(buildResponse(10L, "201", TipoHabitacion.DOBLE, EstadoHabitacion.DISPONIBLE));
+
+		mockMvc.perform(multipart("/api/habitaciones")
+						.file(imagen)
+						.param("numero", "201")
+						.param("piso", "2")
+						.param("tipo", "DOBLE")
+						.param("capacidad", "2")
+						.param("precioPorNoche", "180.00")
+						.param("descripcion", "Habitacion doble"))
+				.andExpect(status().isCreated())
+				.andExpect(header().string("Location", "http://localhost/api/habitaciones/10"))
+				.andExpect(jsonPath("$.id").value(10))
+				.andExpect(jsonPath("$.numero").value("201"));
+
+		verify(fileStorageService).storeHabitacionImage(imagen);
 	}
 
 	@Test

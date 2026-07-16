@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.Grupo1.GestionHoteleria_Backend.entity.AreaComun;
+import com.Grupo1.GestionHoteleria_Backend.entity.EstadoAreaComun;
 import com.Grupo1.GestionHoteleria_Backend.entity.EstadoReserva;
 import com.Grupo1.GestionHoteleria_Backend.entity.ReservaAreaComun;
 import com.Grupo1.GestionHoteleria_Backend.entity.Usuario;
@@ -69,6 +70,10 @@ public class ReservaAreaComunService {
 		// Validar área común existe
 		AreaComun areaComun = areaComunRepository.findById(areaComunId)
 				.orElseThrow(() -> new ResourceNotFoundException("Área común no encontrada con id: " + areaComunId));
+
+		if (EstadoAreaComun.MANTENIMIENTO.equals(areaComun.getEstado())) {
+			throw new IllegalArgumentException("El area comun se encuentra en mantenimiento");
+		}
 
 		// Validar que horaInicio < horaFin
 		if (!horaInicio.isBefore(horaFin)) {

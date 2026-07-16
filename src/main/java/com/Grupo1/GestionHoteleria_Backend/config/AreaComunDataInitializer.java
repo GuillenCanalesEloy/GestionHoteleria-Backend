@@ -41,7 +41,7 @@ public class AreaComunDataInitializer {
 							"Salon gastronomico para cenas privadas y reuniones especiales.",
 							40,
 							"120.00",
-							EstadoAreaComun.OCUPADA),
+							EstadoAreaComun.DISPONIBLE),
 					buildArea("Private Lounge",
 							"Lounge reservado con servicio de cafe, proyector y ambiente ejecutivo.",
 							12,
