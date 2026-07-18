@@ -173,22 +173,22 @@ class SecurityAuthorizationTest {
 	}
 
 	@Test
-	void shouldAllowPublicAccessToGetUsuarios() throws Exception {
-		mockMvc.perform(get("/api/usuarios"))
-				.andExpect(status().isOk());
+	void shouldRejectAnonymousWhenAccessingClientes() throws Exception {
+		mockMvc.perform(get("/api/clientes"))
+				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	@WithMockUser(roles = "CLIENTE")
-	void shouldAllowClienteAccessToGetUsuarios() throws Exception {
-		mockMvc.perform(get("/api/usuarios"))
-				.andExpect(status().isOk());
+	void shouldRejectClienteWhenAccessingClientesManagement() throws Exception {
+		mockMvc.perform(get("/api/clientes"))
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithMockUser(roles = "CLIENTE")
 	void shouldRejectClienteWhenCreatingUsuario() throws Exception {
-		mockMvc.perform(post("/api/usuarios")
+		mockMvc.perform(post("/api/clientes")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -204,7 +204,7 @@ class SecurityAuthorizationTest {
 	@Test
 	@WithMockUser(roles = "CLIENTE")
 	void shouldRejectClienteWhenUpdatingUsuario() throws Exception {
-		mockMvc.perform(put("/api/usuarios/1")
+		mockMvc.perform(put("/api/clientes/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -217,7 +217,7 @@ class SecurityAuthorizationTest {
 	@Test
 	@WithMockUser(roles = "CLIENTE")
 	void shouldRejectClienteWhenPatchingUsuario() throws Exception {
-		mockMvc.perform(patch("/api/usuarios/1")
+		mockMvc.perform(patch("/api/clientes/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -230,21 +230,21 @@ class SecurityAuthorizationTest {
 	@Test
 	@WithMockUser(roles = "CLIENTE")
 	void shouldRejectClienteWhenDeletingUsuario() throws Exception {
-		mockMvc.perform(delete("/api/usuarios/1"))
+		mockMvc.perform(delete("/api/clientes/1"))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void shouldAllowAdminWhenAccessingUsuariosManagement() throws Exception {
-		mockMvc.perform(get("/api/usuarios"))
+		mockMvc.perform(get("/api/clientes"))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void shouldAllowAdminWhenCreatingUsuario() throws Exception {
-		mockMvc.perform(post("/api/usuarios")
+		mockMvc.perform(post("/api/clientes")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -260,7 +260,7 @@ class SecurityAuthorizationTest {
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void shouldAllowAdminWhenUpdatingUsuario() throws Exception {
-		mockMvc.perform(put("/api/usuarios/999")
+		mockMvc.perform(put("/api/clientes/999")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -273,7 +273,7 @@ class SecurityAuthorizationTest {
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void shouldAllowAdminWhenPatchingUsuario() throws Exception {
-		mockMvc.perform(patch("/api/usuarios/999")
+		mockMvc.perform(patch("/api/clientes/999")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
 								{
@@ -286,7 +286,7 @@ class SecurityAuthorizationTest {
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void shouldAllowAdminWhenDeletingUsuario() throws Exception {
-		mockMvc.perform(delete("/api/usuarios/999"))
+		mockMvc.perform(delete("/api/clientes/999"))
 				.andExpect(status().isNotFound());
 	}
 
