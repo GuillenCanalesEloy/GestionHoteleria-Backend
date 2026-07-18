@@ -309,6 +309,18 @@ class ReservaControllerTest {
 	}
 
 	@Test
+	void shouldConfirmOwnReservaWithSimulatedPayment() throws Exception {
+		when(reservaService.findById(1L)).thenReturn(buildResponse(1L, 10L, EstadoReserva.PENDIENTE));
+		when(reservaService.update(eq(1L), any(UpdateReservaRequest.class)))
+				.thenReturn(buildResponse(1L, 10L, EstadoReserva.CONFIRMADA));
+
+		mockMvc.perform(post("/api/reservas/1/confirmar-pago-simulado")
+						.principal(clienteAuth()))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.estado").value("CONFIRMADA"));
+	}
+
+	@Test
 	void shouldRejectUpdateReservaEstadoWithInvalidBody() throws Exception {
 		mockMvc.perform(patch("/api/reservas/1/estado")
 						.principal(adminAuth())

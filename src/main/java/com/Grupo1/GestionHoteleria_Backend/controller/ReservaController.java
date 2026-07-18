@@ -136,6 +136,15 @@ public class ReservaController {
 		return ResponseEntity.ok(reservaService.update(id, updateRequest));
 	}
 
+	@PostMapping("/{id}/confirmar-pago-simulado")
+	public ResponseEntity<ReservaResponse> confirmarPagoSimulado(@PathVariable Long id, Authentication authentication) {
+		ReservaResponse currentReserva = reservaService.findById(id);
+		assertCanAccessReserva(currentReserva, currentUser(authentication));
+
+		UpdateReservaRequest updateRequest = new UpdateReservaRequest(null, null, null, null, null, EstadoReserva.CONFIRMADA);
+		return ResponseEntity.ok(reservaService.update(id, updateRequest));
+	}
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
 		Usuario currentUser = currentUser(authentication);
