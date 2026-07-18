@@ -1,4 +1,24 @@
 [INFO] Scanning for projects...
+Downloading from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml
+Progress (1): 234 BProgress (2): 234 B | 243 BProgress (3): 234 B | 243 B | 255 B                                   Downloaded from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml (234 B at 498 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml (255 B at 541 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml (243 B at 513 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml
+Progress (1): 394 BProgress (2): 394 B | 375 B                           Downloaded from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml (394 B at 12 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml
+Downloaded from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml (375 B at 9.4 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml
+Progress (1): 242 BProgress (2): 242 B | 249 B                           Downloaded from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml (242 B at 5.4 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml
+Progress (2): 249 B | 4.6 kBProgress (2): 249 B | 9.7 kBProgress (2): 249 B | 14 kB                            Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml (249 B at 453 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml (14 kB at 286 kB/s)
+Progress (1): 3.1 kBProgress (1): 7.7 kBProgress (1): 12 kB Progress (1): 17 kBProgress (1): 20 kBProgress (1): 21 kBProgress (2): 21 kB | 398 B                           Downloaded from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml (398 B at 3.3 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml (21 kB at 333 kB/s)
 [INFO] 
 [INFO] ----------------< com.Grupo1:GestionHoteleria-Backend >-----------------
 [INFO] Building  0.0.1-SNAPSHOT
@@ -35,29 +55,29 @@
 
  :: Spring Boot ::                (v4.0.6)
 
-2026-07-15T21:52:55.417-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] c.G.G.GestionHoteleriaBackendApplication : Starting GestionHoteleriaBackendApplication using Java 21.0.8 with PID 20228 (D:\code\GestionHoteleria-Backend\target\classes started by eltsm in D:\code\GestionHoteleria-Backend)
-2026-07-15T21:52:55.421-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] c.G.G.GestionHoteleriaBackendApplication : The following 1 profile is active: "postgres"
-2026-07-15T21:52:55.422-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.boot.SpringApplication               : Loading source class com.Grupo1.GestionHoteleria_Backend.GestionHoteleriaBackendApplication
-2026-07-15T21:52:55.474-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext@2f1de2d6
-2026-07-15T21:52:56.429-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-07-15T21:52:56.450-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.Grupo1.GestionHoteleria_Backend'. Automatic @Repository and @Entity scanning is enabled.
-2026-07-15T21:52:56.513-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 73 ms. Found 9 JPA repository interfaces.
-2026-07-15T21:52:57.568-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : Code archive: C:\Users\eltsm\.m2\repository\org\springframework\boot\spring-boot-web-server\4.0.6\spring-boot-web-server-4.0.6.jar
-2026-07-15T21:52:57.569-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : Code archive: C:\Users\eltsm\.m2\repository\org\springframework\boot\spring-boot-web-server\4.0.6\spring-boot-web-server-4.0.6.jar
-2026-07-15T21:52:57.570-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
-2026-07-15T21:52:57.618-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 10000 (http)
-2026-07-15T21:52:57.663-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-07-15T21:52:57.663-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
-2026-07-15T21:52:57.767-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] b.w.c.s.WebApplicationContextInitializer : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
-2026-07-15T21:52:57.769-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2294 ms
-2026-07-15T21:52:58.171-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
-2026-07-15T21:52:58.240-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
-2026-07-15T21:52:58.836-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-07-15T21:52:58.891-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-07-15T21:53:00.430-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3d667b59
-2026-07-15T21:53:00.432-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-07-15T21:53:00.613-05:00  WARN 20228 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-07-15T21:53:01.116-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-07-16T19:19:09.267-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] c.G.G.GestionHoteleriaBackendApplication : Starting GestionHoteleriaBackendApplication using Java 21.0.8 with PID 12700 (D:\code\GestionHoteleria-Backend\target\classes started by eltsm in D:\code\GestionHoteleria-Backend)
+2026-07-16T19:19:09.275-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] c.G.G.GestionHoteleriaBackendApplication : The following 1 profile is active: "postgres"
+2026-07-16T19:19:09.276-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.boot.SpringApplication               : Loading source class com.Grupo1.GestionHoteleria_Backend.GestionHoteleriaBackendApplication
+2026-07-16T19:19:09.365-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext@2f1de2d6
+2026-07-16T19:19:10.635-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-16T19:19:10.662-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.Grupo1.GestionHoteleria_Backend'. Automatic @Repository and @Entity scanning is enabled.
+2026-07-16T19:19:10.725-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 73 ms. Found 9 JPA repository interfaces.
+2026-07-16T19:19:11.345-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : Code archive: C:\Users\eltsm\.m2\repository\org\springframework\boot\spring-boot-web-server\4.0.6\spring-boot-web-server-4.0.6.jar
+2026-07-16T19:19:11.345-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : Code archive: C:\Users\eltsm\.m2\repository\org\springframework\boot\spring-boot-web-server\4.0.6\spring-boot-web-server-4.0.6.jar
+2026-07-16T19:19:11.346-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
+2026-07-16T19:19:11.391-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 10000 (http)
+2026-07-16T19:19:11.406-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-16T19:19:11.407-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-07-16T19:19:11.487-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] b.w.c.s.WebApplicationContextInitializer : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
+2026-07-16T19:19:11.489-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2123 ms
+2026-07-16T19:19:11.750-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-07-16T19:19:11.828-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
+2026-07-16T19:19:12.962-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-16T19:19:13.022-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-16T19:19:14.896-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3d667b59
+2026-07-16T19:19:14.898-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-16T19:19:15.047-05:00  WARN 12700 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-16T19:19:15.530-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require]
 	Database driver: PostgreSQL JDBC Driver
 	Database dialect: PostgreSQLDialect
@@ -69,26 +89,26 @@
 	Pool: DataSourceConnectionProvider
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-07-15T21:53:02.446-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-07-15T21:53:03.597-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-07-15T21:53:03.675-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-07-15T21:53:03.856-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: webMvcObservationFilter urls=[/*] order=-2147483647, springSecurityFilterChain urls=[/*] order=-100, characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105, jwtAuthenticationFilter urls=[/*] order=2147483647
-2026-07-15T21:53:03.857-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
-2026-07-15T21:53:03.887-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.s.f.OrderedRequestContextFilter    : Filter 'requestContextFilter' configured for use
-2026-07-15T21:53:03.890-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.w.f.ServerHttpObservationFilter      : Filter 'webMvcObservationFilter' configured for use
-2026-07-15T21:53:03.891-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
-2026-07-15T21:53:03.892-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] .DelegatingFilterProxyRegistrationBean$1 : Filter 'springSecurityFilterChain' configured for use
-2026-07-15T21:53:03.892-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.s.filter.OrderedFormContentFilter  : Filter 'formContentFilter' configured for use
-2026-07-15T21:53:04.632-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
-2026-07-15T21:53:04.633-05:00  WARN 20228 --- [GestionHoteleria-Backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
-2026-07-15T21:53:06.091-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 56 mappings in 'requestMappingHandlerMapping'
-2026-07-15T21:53:06.127-05:00  WARN 20228 --- [GestionHoteleria-Backend] [           main] o.s.w.s.resource.ResourceHandlerUtils    : Appended trailing slash to static resource location: file:///D:/code/GestionHoteleria-Backend/uploads/habitaciones/
-2026-07-15T21:53:06.129-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /uploads/habitaciones/**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
-2026-07-15T21:53:06.160-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 2 RequestBodyAdvice, 1 ResponseBodyAdvice
-2026-07-15T21:53:06.206-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
-2026-07-15T21:53:06.574-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
-2026-07-15T21:53:06.665-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 10000 (http) with context path '/'
-2026-07-15T21:53:06.680-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+2026-07-16T19:19:17.045-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-16T19:19:18.288-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-16T19:19:18.415-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-07-16T19:19:18.660-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: webMvcObservationFilter urls=[/*] order=-2147483647, springSecurityFilterChain urls=[/*] order=-100, characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105, jwtAuthenticationFilter urls=[/*] order=2147483647
+2026-07-16T19:19:18.661-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
+2026-07-16T19:19:18.701-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.s.f.OrderedRequestContextFilter    : Filter 'requestContextFilter' configured for use
+2026-07-16T19:19:18.705-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.w.f.ServerHttpObservationFilter      : Filter 'webMvcObservationFilter' configured for use
+2026-07-16T19:19:18.706-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
+2026-07-16T19:19:18.707-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] .DelegatingFilterProxyRegistrationBean$1 : Filter 'springSecurityFilterChain' configured for use
+2026-07-16T19:19:18.708-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.s.filter.OrderedFormContentFilter  : Filter 'formContentFilter' configured for use
+2026-07-16T19:19:19.807-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-07-16T19:19:19.808-05:00  WARN 12700 --- [GestionHoteleria-Backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-07-16T19:19:21.563-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 56 mappings in 'requestMappingHandlerMapping'
+2026-07-16T19:19:21.628-05:00  WARN 12700 --- [GestionHoteleria-Backend] [           main] o.s.w.s.resource.ResourceHandlerUtils    : Appended trailing slash to static resource location: file:///D:/code/GestionHoteleria-Backend/uploads/habitaciones/
+2026-07-16T19:19:21.635-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /uploads/habitaciones/**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-07-16T19:19:21.698-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 2 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-07-16T19:19:21.754-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-07-16T19:19:22.072-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-07-16T19:19:22.149-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 10000 (http) with context path '/'
+2026-07-16T19:19:22.162-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
 
 
 ============================
@@ -1557,9 +1577,9 @@ Unconditional classes:
 
 
 
-2026-07-15T21:53:06.702-05:00  INFO 20228 --- [GestionHoteleria-Backend] [           main] c.G.G.GestionHoteleriaBackendApplication : Started GestionHoteleriaBackendApplication in 11.804 seconds (process running for 12.206)
-2026-07-15T21:53:06.772-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
-2026-07-15T21:53:06.960-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] org.hibernate.SQL                        : 
+2026-07-16T19:19:22.182-05:00  INFO 12700 --- [GestionHoteleria-Backend] [           main] c.G.G.GestionHoteleriaBackendApplication : Started GestionHoteleriaBackendApplication in 13.412 seconds (process running for 13.879)
+2026-07-16T19:19:22.276-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
+2026-07-16T19:19:22.465-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -1569,4 +1589,113 @@ Hibernate:
         count(*) 
     from
         areas_comunes ac1_0
-2026-07-15T21:53:07.203-05:00 DEBUG 20228 --- [GestionHoteleria-Backend] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+2026-07-16T19:19:22.736-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+2026-07-16T19:19:37.653-05:00  INFO 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-16T19:19:37.653-05:00  INFO 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-16T19:19:37.655-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2026-07-16T19:19:37.655-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2026-07-16T19:19:37.658-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@482ac036
+2026-07-16T19:19:37.659-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@60160088
+2026-07-16T19:19:37.660-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-07-16T19:19:37.661-05:00  INFO 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 6 ms
+2026-07-16T19:19:37.703-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui.html", parameters={}
+2026-07-16T19:19:37.708-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc#redirectToUi(HttpServletRequest)
+2026-07-16T19:19:37.763-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-07-16T19:19:37.764-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+2026-07-16T19:19:37.766-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 302 FOUND
+2026-07-16T19:19:37.772-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.html", parameters={}
+2026-07-16T19:19:37.775-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:19:37.782-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:56.791-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui.html", parameters={}
+2026-07-16T19:21:56.793-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc#redirectToUi(HttpServletRequest)
+2026-07-16T19:21:56.796-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json, application/yaml]
+2026-07-16T19:21:56.797-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+2026-07-16T19:21:56.798-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 302 FOUND
+2026-07-16T19:21:56.805-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.html", parameters={}
+2026-07-16T19:21:56.807-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:56.810-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:56.884-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-ui.css", parameters={}
+2026-07-16T19:21:56.886-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-ui-bundle.js", parameters={}
+2026-07-16T19:21:56.886-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.css", parameters={}
+2026-07-16T19:21:56.889-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:56.890-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:56.891-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-6] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:56.895-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:56.898-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:56.905-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-ui-standalone-preset.js", parameters={}
+2026-07-16T19:21:56.907-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-8] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:56.912-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-initializer.js", parameters={}
+2026-07-16T19:21:56.913-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:56.923-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:56.926-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:56.986-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.css", parameters={}
+2026-07-16T19:21:56.996-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:56.997-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [o-10000-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-ui.css", parameters={}
+2026-07-16T19:21:57.000-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:57.003-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:57.007-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [o-10000-exec-10] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:57.014-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [o-10000-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:57.335-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api-docs/swagger-config", parameters={}
+2026-07-16T19:21:57.337-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerConfigResource#openapiJson(HttpServletRequest)
+2026-07-16T19:21:57.339-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/favicon-16x16.png", parameters={}
+2026-07-16T19:21:57.340-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json]
+2026-07-16T19:21:57.340-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:21:57.341-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{configUrl=/api-docs/swagger-config, oauth2RedirectUrl=http://localhost:10000/swagger-ui/oauth2-redi (truncated)...]
+2026-07-16T19:21:57.343-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:57.393-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:21:57.409-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api-docs", parameters={}
+2026-07-16T19:21:57.410-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.api.OpenApiWebMvcResource#openapiJson(HttpServletRequest, String, Locale)
+2026-07-16T19:21:58.278-05:00  INFO 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 855 ms
+2026-07-16T19:21:58.308-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, */*] and supported [application/json]
+2026-07-16T19:21:58.312-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{7b226f70656e617069223a22332e312e30222c22696e666f223a7b227469746c65223a22415049206465204765737469c3b (truncated)...]
+2026-07-16T19:21:58.313-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:07.847-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui.html", parameters={}
+2026-07-16T19:22:07.848-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc#redirectToUi(HttpServletRequest)
+2026-07-16T19:22:07.851-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json, application/yaml]
+2026-07-16T19:22:07.852-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+2026-07-16T19:22:07.853-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 302 FOUND
+2026-07-16T19:22:07.858-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.html", parameters={}
+2026-07-16T19:22:07.859-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:22:07.861-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:08.087-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-ui.css", parameters={}
+2026-07-16T19:22:08.088-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:22:08.092-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.css", parameters={}
+2026-07-16T19:22:08.092-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:08.093-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-ui-standalone-preset.js", parameters={}
+2026-07-16T19:22:08.093-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-ui-bundle.js", parameters={}
+2026-07-16T19:22:08.095-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:22:08.094-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-8] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:22:08.095-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/swagger-initializer.js", parameters={}
+2026-07-16T19:22:08.097-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:22:08.095-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:22:08.098-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:08.100-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:08.104-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:08.112-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:08.298-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [o-10000-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api-docs/swagger-config", parameters={}
+2026-07-16T19:22:08.299-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [o-10000-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerConfigResource#openapiJson(HttpServletRequest)
+2026-07-16T19:22:08.300-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [o-10000-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json]
+2026-07-16T19:22:08.301-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [o-10000-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{configUrl=/api-docs/swagger-config, oauth2RedirectUrl=http://localhost:10000/swagger-ui/oauth2-redi (truncated)...]
+2026-07-16T19:22:08.302-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [o-10000-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:08.313-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/favicon-32x32.png", parameters={}
+2026-07-16T19:22:08.316-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-07-16T19:22:08.319-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-07-16T19:22:08.323-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api-docs", parameters={}
+2026-07-16T19:22:08.324-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.api.OpenApiWebMvcResource#openapiJson(HttpServletRequest, String, Locale)
+2026-07-16T19:22:08.694-05:00  INFO 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 368 ms
+2026-07-16T19:22:08.700-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, */*] and supported [application/json]
+2026-07-16T19:22:08.703-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{7b226f70656e617069223a22332e312e30222c22696e666f223a7b227469746c65223a22415049206465204765737469c3b (truncated)...]
+2026-07-16T19:22:08.704-05:00 DEBUG 12700 --- [GestionHoteleria-Backend] [io-10000-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11:31 min
+[INFO] Finished at: 2026-07-16T19:30:35-05:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.0.6:run (default-cli) on project GestionHoteleria-Backend: Process terminated with exit code: -1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
